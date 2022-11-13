@@ -1,0 +1,25 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+flask = "*"
+flask-sqlalchemy = "*"
+flask-migrate = "*"
+flask-cors = "*"
+flask-restful = "*"
+werkzeug = "*"
+six = "*"
+pytz = "*"
+psycopg2 = "*"
+markupsafe = "*"
+jinja2 = "*"
+itsdangerous = "*"
+click = "*"
+aniso8601 = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.10"
