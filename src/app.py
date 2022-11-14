@@ -1,10 +1,8 @@
-from flask import Flask
-from flask_moment import Moment
-from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
+from flask import Flask, request, abort, jsonify
+from flask_cors import CORS, cross_origin
 
-from models import User
+from .database.models import User, Note, Task, setup_db, db_drop_and_create_all
 
-# App Config
 app = Flask(__name__)
-moment = Moment(app)
+setup_db(app)
+CORS(app, resources={r"*/api/*": {"origins": "*"}})
