@@ -18,6 +18,8 @@ jinja2 = "*"
 itsdangerous = "*"
 click = "*"
 aniso8601 = "*"
+flask-login = "*"
+flask-bcrypt = "*"
 
 [dev-packages]
 
