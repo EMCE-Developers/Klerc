@@ -1,6 +1,7 @@
 import os
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
+from flask_bcrypt import generate_password_hash, check_password_hash
 
 # used th get the absolute path of this directory
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -32,6 +33,12 @@ class User(db.Model, UserMixin):
     date_created = db.Column(db.String)
     note = db.relationship('Note', backref=db.backref('Note', lazy=True))
     task = db.relationship('Task', backref=db.backref('Task', lazy=True))
+
+    def hash_password(self):
+        self.password = generate_password_hash(self.password).decode('utf8')
+
+    def check_password(self, password):
+        return check_password_hash(self.password, password)
 
     def __repre__(self):
         return f'<User {self.id} {self.first_name} {self.last_name}>'
