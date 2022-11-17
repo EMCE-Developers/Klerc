@@ -30,8 +30,6 @@ def register():
     username = body.get("username")
     password = request.json.get("password")
 
-    username_list = query.User
-
     try:
         new_user = User(
             first_name = first_name,
