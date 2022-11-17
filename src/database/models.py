@@ -16,6 +16,7 @@ def setup_db(app, database_path=database_path):
     db.app = app
     db.init_app(app)
 
+
 def db_drop_and_create_all():
     db.drop_all()
     db.create_all()
@@ -69,6 +70,10 @@ class Note(db.Model):
     def __repre__(self):
         return f'<User {self.id} {self.title} {self.content}>'
 
+    def insert(self):
+        db.session.add(self)
+        db.session.commit()
+
 
 class Task(db.Model):
     __tablename__ = 'task'
@@ -83,5 +88,3 @@ class Task(db.Model):
 
     def __repre__(self):
         return f'<User {self.id} {self.start_time} {self.time_period}>'
-
-
