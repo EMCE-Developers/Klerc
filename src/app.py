@@ -41,7 +41,6 @@ def register():
             password = password,
             date_created = now.strftime("%d/%m/%Y %H:%M:%S"), 
         )
-        if new_user.username in
         new_user.hash_password()
         new_user.insert()
 
