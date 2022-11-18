@@ -1,7 +1,6 @@
-import sys
 from flask import Flask, abort, jsonify, request
 from flask_cors import CORS, cross_origin
-from flask_login import LoginManager
+from flask_login import LoginManager, login_user
 from flask_bcrypt import Bcrypt
 from datetime import datetime
 from .database.models import Note, Task, User, db_drop_and_create_all, setup_db
@@ -27,7 +26,7 @@ def index():
     })
 
 
-@app.route('/register', methods=['POST'])
+@app.route('/register', methods=['GET', 'POST'])
 @cross_origin()
 def register():
     body = request.get_json()
@@ -37,8 +36,9 @@ def register():
     last_name = body.get("last_name")
     email = body.get("email")
     username = body.get("username")
-    password = request.json.get("password")
+    password = body.get("password")
 
+    # New user's details are saved to the database
     try:
         new_user = User(
             first_name=first_name,
@@ -51,14 +51,50 @@ def register():
         new_user.hash_password()
         new_user.insert()
 
-        return jsonify(
-            {
+        return jsonify({
                 "success": True
-            }
-        )
+        })
     except Exception:
         abort(422)
 
+
+@app.route('/login', methods=['GET', 'POST'])
+@cross_origin()
+def login():
+    body = request.get_json()
+    #Get user login details
+    username = body.get("username")
+    password = body.get("password")
+
+    # User should be able to login with his username or email to access resources
+    '''
+        if user exist in database?
+            if yes, check if password matches with user
+                if yes give access
+            else return 'wrong input'
+        else return 'username does not exist'
+    '''
+    try:
+        user = User.query.filter_by(username=username).first()
+        decrypted_password = bcrypt.check_password_hash(user.password, password)
+        print("This is decrypted: ", decrypted_password)
+        if user is None:
+            return ({
+                "success": False,
+                "message": "Invalid username"
+            })
+        if user and decrypted_password == False:
+            return({
+                "success": False,
+                "message": "Username and Password does not match"
+            })
+        login_user(user)
+        return ({
+            "success": True,
+            "message": "Login successful"
+        })
+    except Exception:
+        abort(422)
 
 # Made this endpoint to see what is stored in the database
 @app.route('/users', methods=['GET', 'POST'])
@@ -66,8 +102,6 @@ def register():
 def users():
     users = User.query.all()
     formatted_users = [{user.date_created: user.username} for user in users]
-
-    print(formatted_users)
 
     return jsonify({
         "success": True,
