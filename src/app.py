@@ -131,4 +131,34 @@ def create_note():
         })
 
 
+@app.route('/tasks/create', methods=['GET', 'POST'])
+@cross_origin()
+def create_task():
+    body = request.get_json()
 
+    title = body.get("title")
+    content = body.get("content")
+    start_time = body.get("start_time")
+    time_period = body.get("time_period")
+
+    if start_time is None:
+        start_time = "To be set"
+    if time_period is None:
+        time_period = "To be set"
+    try:
+        task = Task(
+            title=title,
+            content=content,
+            start_time=start_time,
+            end_time=start_time + time_period,
+            time_period=time_period,
+            user_id=load_user,
+        )
+        task.insert()
+
+        return ({
+            'success': True,
+            "message": "Task created successfully"
+        })
+    except Exception:
+        abort(422)

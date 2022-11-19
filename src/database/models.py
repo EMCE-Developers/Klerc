@@ -73,6 +73,7 @@ class Task(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     start_time = db.Column(db.String)
+    end_time = db.Column(db.String)
     time_period = db.Column(db.String)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     #note to be removed so task will not be dependent on Note
