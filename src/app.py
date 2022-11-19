@@ -7,12 +7,11 @@ from .database.models import Note, Task, User, db_drop_and_create_all, setup_db
 
 app = Flask(__name__)
 setup_db(app)
+app.config['SECRET_KEY'] = '$51335EMCE53315$'
 bcrypt = Bcrypt(app)
 CORS(app, resources={r"*/api/*": {"origins": "*"}})
-
 login_manager = LoginManager()
 login_manager.init_app(app)
-
 now = datetime.now()
 
 # with app.app_context():
@@ -71,14 +70,7 @@ def login():
     username = body.get("username")
     password = body.get("password")
 
-    # User should be able to login with his username or email to access resources
-    '''
-        if user exist in database?
-            if yes, check if password matches with user
-                if yes give access
-            else return 'wrong input'
-        else return 'username does not exist'
-    '''
+    # User should be able to login with his username to access resources
     try:
         user = User.query.filter_by(username=username).first()
         
@@ -88,21 +80,6 @@ def login():
                 "message": "Invalid username or password"
             })
 
-        '''
-        if user is None:
-            return ({
-                "success": False,
-                "message": "Invalid username"
-            })
-        authorized = check_password_hash(user.password, password)
-        print(authorized)
-        if not authorized:
-            return (
-                {
-                    'error': "Username or password invalid"
-                }, 401
-            )
-        '''
         login_user(user)
         return ({
             "success": True,
