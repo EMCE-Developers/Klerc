@@ -1,7 +1,7 @@
 from flask import Flask, abort, jsonify, request
 from flask_cors import CORS, cross_origin
 from flask_login import LoginManager, login_user
-from flask_bcrypt import Bcrypt
+from flask_bcrypt import Bcrypt, generate_password_hash, check_password_hash
 from datetime import datetime
 from .database.models import Note, Task, User, db_drop_and_create_all, setup_db
 
@@ -11,6 +11,7 @@ bcrypt = Bcrypt(app)
 CORS(app, resources={r"*/api/*": {"origins": "*"}})
 
 login_manager = LoginManager()
+login_manager.init_app(app)
 
 now = datetime.now()
 
@@ -45,10 +46,14 @@ def register():
             last_name=last_name,
             email=email,
             username=username,
-            password=password,
+            password=generate_password_hash(password, 10),
             date_created=now.strftime("%d/%m/%Y %H:%M:%S"),
         )
-        new_user.hash_password()
+        print(new_user.password)
+        if user := User.query.filter_by(username=username, email=email).first():
+            return({
+                "message": "User already exist"
+            })
         new_user.insert()
 
         return jsonify({
@@ -76,18 +81,28 @@ def login():
     '''
     try:
         user = User.query.filter_by(username=username).first()
-        decrypted_password = bcrypt.check_password_hash(user.password, password)
-        print("This is decrypted: ", decrypted_password)
+        
+        if not user and not check_password_hash(user.password, password):
+            return ({
+                "success": False,
+                "message": "Invalid username or password"
+            })
+
+        '''
         if user is None:
             return ({
                 "success": False,
                 "message": "Invalid username"
             })
-        if user and decrypted_password == False:
-            return({
-                "success": False,
-                "message": "Username and Password does not match"
-            })
+        authorized = check_password_hash(user.password, password)
+        print(authorized)
+        if not authorized:
+            return (
+                {
+                    'error': "Username or password invalid"
+                }, 401
+            )
+        '''
         login_user(user)
         return ({
             "success": True,
@@ -134,3 +149,6 @@ def create_note():
             "success": False,
             "message": e
         })
+
+
+
