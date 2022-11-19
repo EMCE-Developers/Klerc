@@ -17,6 +17,9 @@ now = datetime.now()
 # with app.app_context():
 #     db_drop_and_create_all()
 
+@login_manager.user_loader
+def load_user(id):
+    return User.query.get(id)
 
 @app.route('/')
 @cross_origin()

@@ -42,12 +42,12 @@ class User(db.Model, UserMixin):
         db.session.add(self)
         db.session.commit()
 
-    def delete(self):
-        db.session.delete(self)
-        db.session.commit()
+    #def delete(self):
+    #    db.session.delete(self)
+    #    db.session.commit()
 
-    def update(self):
-        db.session.commit()
+    #def update(self):
+    #    db.session.commit()
 
 
 class Note(db.Model):
@@ -56,10 +56,9 @@ class Note(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String)
     content = db.Column(db.String)
-
-    # user and task have been removed
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    task_id = db.Column(db.Integer, db.ForeignKey('task.id'))
+    #task_id to be removed so task will not rely on Note
+    #task_id = db.Column(db.Integer, db.ForeignKey('task.id'))
 
     def __repre__(self):
         return f'<User {self.id} {self.title} {self.content}>'
@@ -75,10 +74,11 @@ class Task(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     start_time = db.Column(db.String)
     time_period = db.Column(db.String)
-
-    # user column was removed
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    note = db.relationship('Note', backref=db.backref('note', lazy=True))
+    #note to be removed so task will not be dependent on Note
+    #note = db.relationship('Note', backref=db.backref('note', lazy=True))
+    title = db.Column(db.String)
+    content = db.Column(db.String)
 
     def __repre__(self):
         return f'<User {self.id} {self.start_time} {self.time_period}>'
