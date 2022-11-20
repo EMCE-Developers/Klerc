@@ -130,6 +130,8 @@ def new_category():
             "message": e
         })
 
+# create new note  "methods=['POST']"
+
 
 @app.route('/notes', methods=['POST'])
 @cross_origin()
@@ -156,6 +158,48 @@ def create_note():
             "success": False,
             "message": e
         })
+
+
+@app.route('/notes/<int:id>', methods=['GET'])
+@cross_origin()
+def get_note(id):
+
+    try:
+        # Join was done here in order to get the user's name
+
+        query = db.session.query(Note, User).join(
+            Note, User.id == Note.user_id).filter(User.id == id).first()
+        note = query[0]
+        user = query[1]
+
+        return jsonify({
+            "creator": user.first_name,
+            "id": note.id,
+            "title": note.title,
+            "content": note.content,
+            "date_created": note.date_created
+        })
+    except Exception as e:
+        print(e)
+        return jsonify({
+            "success": False,
+            "message": "Note not found"
+        })
+
+
+# get all notes
+@app.route('/notes', methods=['GET'])
+@cross_origin()
+def get_notes():
+    query = db.session.query(Note, User).join(
+        Note, User.id == Note.user_id).group_by(User.id, Note.id).all()
+    data = [{"id": data[0].id, "title": data[0].title,
+             "content": data[0].content, "date_creaed": data[0].date_created, "creator": data[1].first_name} for data in query]
+
+    return jsonify({
+        "success": True,
+        "notes": data
+    })
 
 
 @app.route('/tasks/create', methods=['GET', 'POST'])
