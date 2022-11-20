@@ -14,8 +14,8 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 now = datetime.now()
 
-with app.app_context():
-    db_drop_and_create_all()
+#with app.app_context():
+#    db_drop_and_create_all()
 
 @login_manager.user_loader
 def load_user(id):
@@ -161,3 +161,16 @@ def create_task():
         })
     except Exception:
         abort(422)
+
+@app.route('/tasks', methods=['GET', 'POST'])
+@cross_origin()
+def view_task():
+    tasks = Task.query.all()
+    #formatted_tasks = [{
+    #    tasks.title: tasks.content: tasks.start_time: tasks.time_period
+    #} for task in tasks]
+
+    return jsonify({
+        "success": True,
+        "tasks": tasks
+    })
