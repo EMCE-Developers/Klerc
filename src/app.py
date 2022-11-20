@@ -164,14 +164,11 @@ def create_task():
     body = request.get_json()
 
     title = body.get("title")
-    content = body.get("content")
+    content = body.get("description")
     start_time = body.get("start_time")
     time_period = body.get("time_period")
 
-    if start_time is None:
-        start_time = "To be set"
-    if time_period is None:
-        time_period = "To be set"
+    
     try:
         task = Task(
             title=title,
@@ -180,6 +177,18 @@ def create_task():
             time_period=time_period,
             # user_id=load_user(id),
         )
+
+        if title is None:
+            return ({
+                "success": False,
+                "message": "Please enter Task title"
+            })
+
+        if start_time is None and time_period is None:
+            return ({
+                "success": False,
+                "message": "Please enter valid start time and time period for task"
+            })
         task.insert()
 
         return ({
@@ -203,15 +212,17 @@ def view_task():
         match [task.start_time < current_time]:
             case [True]:
                 past_tasks.append({
+                    "id": task.id,
                     "title": task.title,
-                    "content": task.content,
+                    "description": task.content,
                     "start_time": task.start_time,
                     "time_period": task.time_period
                  })
             case [False]:
                 upcoming_tasks.append({
+                    "id": task.id,
                     "title": task.title,
-                    "content": task.content,
+                    "description": task.content,
                     "start_time": task.start_time,
                     "time_period": task.time_period
                 })
@@ -226,3 +237,48 @@ def view_task():
         "success": True,
         "tasks": task_data
     })
+
+@app.route('/tasks/<int:id>/edit', methods=['GET'])
+@cross_origin()
+def edit_task(id):
+
+    task = Task.query.get(id)
+
+    task_data = {
+        "id": task.id,
+        "title": task.title,
+        "description": task.content,
+        "start_time": task.start_time,
+        "time_period": task.time_period
+    }
+
+    return ({
+        "success": True,
+        "task": task_data
+    })
+
+@app.route('/tasks/<int:task_id>/edit', methods=['POST','PATCH'])
+@cross_origin()
+def edit_task_submission(task_id):
+
+    body = request.get_json()
+
+    try:
+        task_to_update = Task.query.filter(Task.id == task_id).one_or_none()
+
+        if task_to_update is None:
+            abort(404)
+
+        task_to_update.title = body.get("title")
+        task_to_update.content = body.get("description")
+        task_to_update.start_time = body.get("start_time")
+        task_to_update.time_period = body.get("time_period")
+
+        task_to_update.update()
+
+        return ({
+            'success': True,
+            "message": "Task updated successfully"
+        })
+    except Exception:
+        abort(422)
