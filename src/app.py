@@ -12,7 +12,7 @@ bcrypt = Bcrypt(app)
 CORS(app, resources={r"*/api/*": {"origins": "*"}})
 login_manager = LoginManager()
 login_manager.init_app(app)
-now = datetime.now()
+current_time = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 
 #with app.app_context():
 #    db_drop_and_create_all()
@@ -49,7 +49,7 @@ def register():
             email=email,
             username=username,
             password=generate_password_hash(password, 10),
-            date_created=now.strftime("%d/%m/%Y %H:%M:%S"),
+            date_created=current_time,
         )
         print(new_user.password)
         if user := User.query.filter_by(username=username, email=email).first():
@@ -166,11 +166,35 @@ def create_task():
 @cross_origin()
 def view_task():
     tasks = Task.query.all()
-    #formatted_tasks = [{
-    #    tasks.title: tasks.content: tasks.start_time: tasks.time_period
-    #} for task in tasks]
+    past_tasks = []
+    upcoming_tasks = []
+    for task in tasks:
+        # When we implement current task, it should look like,
+        # match [task.end_time < current_time, task.end_time > current_time]
+        #       case [True, Flase]: for current task
+        match [task.start_time < current_time]:
+            case [True]:
+                past_tasks.append({
+                    "title": task.title,
+                    "content": task.content,
+                    "start_time": task.start_time,
+                    "time_period": task.time_period
+                })
+            case [False]:
+                upcoming_tasks.append({
+                    "title": task.title,
+                    "content": task.content,
+                    "start_time": task.start_time,
+                    "time_period": task.time_period
+                })
+    
+    task_data ={
+        "upcoming_tasks": upcoming_tasks,
+        "past_tasks": past_tasks
+    }
+    
 
     return jsonify({
         "success": True,
-        "tasks": tasks
+        "tasks": task_data
     })
