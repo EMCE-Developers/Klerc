@@ -238,24 +238,31 @@ def view_task():
         "tasks": task_data
     })
 
-@app.route('/tasks/<int:id>/edit', methods=['GET'])
+@app.route('/tasks/<int:task_id>/edit', methods=['GET'])
 @cross_origin()
-def edit_task(id):
+def edit_task(task_id):
 
-    task = Task.query.get(id)
+    try:
+        task = Task.query.filter(Task.id==task_id).one_or_none()
+        print(task)
 
-    task_data = {
-        "id": task.id,
-        "title": task.title,
-        "description": task.content,
-        "start_time": task.start_time,
-        "time_period": task.time_period
-    }
+        if task is None:
+            abort(404)
 
-    return ({
-        "success": True,
-        "task": task_data
-    })
+        task_data = {
+            "id": task.id,
+            "title": task.title,
+            "description": task.content,
+            "start_time": task.start_time,
+            "time_period": task.time_period
+        }
+
+        return ({
+            "success": True,
+            "task": task_data
+        })
+    except Exception:
+        abort(400)
 
 @app.route('/tasks/<int:task_id>/edit', methods=['POST','PATCH'])
 @cross_origin()
@@ -264,7 +271,7 @@ def edit_task_submission(task_id):
     body = request.get_json()
 
     try:
-        task_to_update = Task.query.filter(Task.id == task_id).one_or_none()
+        task_to_update = Task.query.filter(Task.id==task_id).one_or_none()
 
         if task_to_update is None:
             abort(404)
@@ -282,3 +289,19 @@ def edit_task_submission(task_id):
         })
     except Exception:
         abort(422)
+
+@app.route('/tasks/<int:task_id>/delete', methods=['DELETE'])
+@cross_origin()
+def delete_task(task_id):
+
+    try:
+        task = Task.query.filter(Task.id==task_id).one_or_none()
+
+        if task is None:
+            abort(404)
+
+        task.delete()
+
+        return {"success": True,"message": f"{str(task.title)} deleted successfully"}
+    except Exception:
+        abort(400)
