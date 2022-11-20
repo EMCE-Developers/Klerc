@@ -14,7 +14,7 @@ CORS(app, resources={r"*/api/*": {"origins": "*"}})
 login_manager = LoginManager()
 login_manager.init_app(app)
 migrate = Migrate(app, db)
-now = datetime.now()
+current_time = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 
 # with app.app_context():
 #    db_drop_and_create_all()
@@ -53,7 +53,7 @@ def register():
             email=email,
             username=username,
             password=generate_password_hash(password, 10),
-            date_created=now.strftime("%d/%m/%Y %H:%M:%S"),
+            date_created=current_time,
         )
         print(new_user.password)
         if user := User.query.filter_by(username=username, email=email).first():
@@ -145,7 +145,7 @@ def create_note():
 
     try:
         new_note = Note(title=title, content=content,
-                        user_id=user_id, category_id=category_id, date_created=now.strftime("%d/%m/%Y %H:%M:%S"),)
+                        user_id=user_id, category_id=category_id, date_created=current_time,)
 
         new_note.insert()
 
@@ -208,14 +208,11 @@ def create_task():
     body = request.get_json()
 
     title = body.get("title")
-    content = body.get("content")
+    content = body.get("description")
     start_time = body.get("start_time")
     time_period = body.get("time_period")
 
-    if start_time is None:
-        start_time = "To be set"
-    if time_period is None:
-        time_period = "To be set"
+    
     try:
         task = Task(
             title=title,
@@ -224,6 +221,18 @@ def create_task():
             time_period=time_period,
             # user_id=load_user(id),
         )
+
+        if title is None:
+            return ({
+                "success": False,
+                "message": "Please enter Task title"
+            })
+
+        if start_time is None and time_period is None:
+            return ({
+                "success": False,
+                "message": "Please enter valid start time and time period for task"
+            })
         task.insert()
 
         return ({
@@ -238,11 +247,105 @@ def create_task():
 @cross_origin()
 def view_task():
     tasks = Task.query.all()
-    # formatted_tasks = [{
-    #    tasks.title: tasks.content: tasks.start_time: tasks.time_period
-    # } for task in tasks]
+    past_tasks = []
+    upcoming_tasks = []
+    for task in tasks:
+        # When we implement current task, it should look like,
+        # match [task.end_time < current_time, task.end_time > current_time]
+        #       case [True, Flase]: for current task
+        match [task.start_time < current_time]:
+            case [True]:
+                past_tasks.append({
+                    "id": task.id,
+                    "title": task.title,
+                    "description": task.content,
+                    "start_time": task.start_time,
+                    "time_period": task.time_period
+                 })
+            case [False]:
+                upcoming_tasks.append({
+                    "id": task.id,
+                    "title": task.title,
+                    "description": task.content,
+                    "start_time": task.start_time,
+                    "time_period": task.time_period
+                })
+    
+    task_data ={
+        "upcoming_tasks": upcoming_tasks,
+        "past_tasks": past_tasks
+    }
+    
 
     return jsonify({
         "success": True,
-        "tasks": tasks
+        "tasks": task_data
     })
+
+@app.route('/tasks/<int:task_id>/edit', methods=['GET'])
+@cross_origin()
+def edit_task(task_id):
+
+    try:
+        task = Task.query.filter(Task.id==task_id).one_or_none()
+        print(task)
+
+        if task is None:
+            abort(404)
+
+        task_data = {
+            "id": task.id,
+            "title": task.title,
+            "description": task.content,
+            "start_time": task.start_time,
+            "time_period": task.time_period
+        }
+
+        return ({
+            "success": True,
+            "task": task_data
+        })
+    except Exception:
+        abort(400)
+
+@app.route('/tasks/<int:task_id>/edit', methods=['POST','PATCH'])
+@cross_origin()
+def edit_task_submission(task_id):
+
+    body = request.get_json()
+
+    try:
+        task_to_update = Task.query.filter(Task.id==task_id).one_or_none()
+
+        if task_to_update is None:
+            abort(404)
+
+        task_to_update.title = body.get("title")
+        task_to_update.content = body.get("description")
+        task_to_update.start_time = body.get("start_time")
+        task_to_update.time_period = body.get("time_period")
+
+        task_to_update.update()
+
+        return ({
+            'success': True,
+            "message": "Task updated successfully"
+        })
+    except Exception:
+        abort(422)
+
+@app.route('/tasks/<int:task_id>/delete', methods=['DELETE'])
+@cross_origin()
+def delete_task(task_id):
+
+    try:
+        task = Task.query.filter(Task.id==task_id).one_or_none()
+
+        if task is None:
+            abort(404)
+
+        task.delete()
+
+        return {"success": True,"message": f"{str(task.title)} deleted successfully"}
+    except Exception:
+        abort(400)
