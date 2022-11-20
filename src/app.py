@@ -191,14 +191,29 @@ def get_note(id):
 @app.route('/notes', methods=['GET'])
 @cross_origin()
 def get_notes():
-    query = db.session.query(Note, User).join(
-        Note, User.id == Note.user_id).group_by(User.id, Note.id).all()
-    data = [{"id": data[0].id, "title": data[0].title,
-             "content": data[0].content, "date_creaed": data[0].date_created, "creator": data[1].first_name} for data in query]
+
+    query = db.session.query(User, Note, Category).join(
+        Note, User.id == Note.user_id).join(Category, Note.category_id == Category.id).all()
+
+    data = [{"id": data[1].id, "title": data[1].title,
+             "content": data[1].content, "date_creaed": data[1].date_created, "creator": data[0].first_name, "category": data[2].name} for data in query]
 
     return jsonify({
         "success": True,
         "notes": data
+    })
+
+
+# get all notes by category
+@app.route('/notes/<string:category>', methods=['GET'])
+@cross_origin()
+def get_notes_by_category(category):
+    query = db.session.query(Note, Category).join(
+        Note, Category.id == Note.category_id).filter(Category.name.like("%" + category+"%")).all()
+
+    print(query)
+    return jsonify({
+        "success": True
     })
 
 
@@ -212,7 +227,6 @@ def create_task():
     start_time = body.get("start_time")
     time_period = body.get("time_period")
 
-    
     try:
         task = Task(
             title=title,
@@ -261,7 +275,7 @@ def view_task():
                     "description": task.content,
                     "start_time": task.start_time,
                     "time_period": task.time_period
-                 })
+                })
             case [False]:
                 upcoming_tasks.append({
                     "id": task.id,
@@ -270,24 +284,24 @@ def view_task():
                     "start_time": task.start_time,
                     "time_period": task.time_period
                 })
-    
-    task_data ={
+
+    task_data = {
         "upcoming_tasks": upcoming_tasks,
         "past_tasks": past_tasks
     }
-    
 
     return jsonify({
         "success": True,
         "tasks": task_data
     })
 
+
 @app.route('/tasks/<int:task_id>/edit', methods=['GET'])
 @cross_origin()
 def edit_task(task_id):
 
     try:
-        task = Task.query.filter(Task.id==task_id).one_or_none()
+        task = Task.query.filter(Task.id == task_id).one_or_none()
         print(task)
 
         if task is None:
@@ -308,14 +322,15 @@ def edit_task(task_id):
     except Exception:
         abort(400)
 
-@app.route('/tasks/<int:task_id>/edit', methods=['POST','PATCH'])
+
+@app.route('/tasks/<int:task_id>/edit', methods=['POST', 'PATCH'])
 @cross_origin()
 def edit_task_submission(task_id):
 
     body = request.get_json()
 
     try:
-        task_to_update = Task.query.filter(Task.id==task_id).one_or_none()
+        task_to_update = Task.query.filter(Task.id == task_id).one_or_none()
 
         if task_to_update is None:
             abort(404)
@@ -334,18 +349,19 @@ def edit_task_submission(task_id):
     except Exception:
         abort(422)
 
+
 @app.route('/tasks/<int:task_id>/delete', methods=['DELETE'])
 @cross_origin()
 def delete_task(task_id):
 
     try:
-        task = Task.query.filter(Task.id==task_id).one_or_none()
+        task = Task.query.filter(Task.id == task_id).one_or_none()
 
         if task is None:
             abort(404)
 
         task.delete()
 
-        return {"success": True,"message": f"{str(task.title)} deleted successfully"}
+        return {"success": True, "message": f"{str(task.title)} deleted successfully"}
     except Exception:
         abort(400)
