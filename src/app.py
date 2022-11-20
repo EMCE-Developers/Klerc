@@ -14,8 +14,8 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 now = datetime.now()
 
-# with app.app_context():
-#     db_drop_and_create_all()
+with app.app_context():
+    db_drop_and_create_all()
 
 @login_manager.user_loader
 def load_user(id):
@@ -150,9 +150,8 @@ def create_task():
             title=title,
             content=content,
             start_time=start_time,
-            end_time=start_time + time_period,
             time_period=time_period,
-            user_id=load_user,
+            #user_id=load_user(id),
         )
         task.insert()
 
