@@ -1,9 +1,10 @@
 from flask import Flask, abort, jsonify, request
 from flask_cors import CORS, cross_origin
+from flask_migrate import Migrate
 from flask_login import LoginManager, login_user
 from flask_bcrypt import Bcrypt, generate_password_hash, check_password_hash
 from datetime import datetime
-from .database.models import Note, Task, User, db_drop_and_create_all, setup_db
+from .database.models import Note, db, Task, Category, User, db_drop_and_create_all, setup_db
 
 app = Flask(__name__)
 setup_db(app)
@@ -12,14 +13,21 @@ bcrypt = Bcrypt(app)
 CORS(app, resources={r"*/api/*": {"origins": "*"}})
 login_manager = LoginManager()
 login_manager.init_app(app)
+<<<<<<< HEAD
 current_time = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+=======
+migrate = Migrate(app, db)
+now = datetime.now()
+>>>>>>> 63e7d9e67493129f288122bf43390efb92cfee27
 
-#with app.app_context():
+# with app.app_context():
 #    db_drop_and_create_all()
+
 
 @login_manager.user_loader
 def load_user(id):
     return User.query.get(id)
+
 
 @app.route('/')
 @cross_origin()
@@ -53,13 +61,13 @@ def register():
         )
         print(new_user.password)
         if user := User.query.filter_by(username=username, email=email).first():
-            return({
+            return ({
                 "message": "User already exist"
             })
         new_user.insert()
 
         return jsonify({
-                "success": True
+            "success": True
         })
     except Exception:
         abort(422)
@@ -69,14 +77,14 @@ def register():
 @cross_origin()
 def login():
     body = request.get_json()
-    #Get user login details
+    # Get user login details
     username = body.get("username")
     password = body.get("password")
 
     # User should be able to login with his username to access resources
     try:
         user = User.query.filter_by(username=username).first()
-        
+
         if not user and not check_password_hash(user.password, password):
             return ({
                 "success": False,
@@ -92,11 +100,14 @@ def login():
         abort(422)
 
 # Made this endpoint to see what is stored in the database
+
+
 @app.route('/users', methods=['GET', 'POST'])
 @cross_origin()
 def users():
     users = User.query.all()
-    formatted_users = [{user.date_created: user.username} for user in users]
+    formatted_users = [
+        {user.date_created: user.username, "id": user.id} for user in users]
 
     return jsonify({
         "success": True,
@@ -104,7 +115,27 @@ def users():
     })
 
 
-@app.route('/new_note', methods=['POST'])
+@app.route('/categories', methods=['POST'])
+@cross_origin()
+def new_category():
+
+    body = request.get_json()
+
+    try:
+        category = Category(name=body.get('name'))
+        category.insert()
+
+        return jsonify({
+            "success": True
+        })
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "message": e
+        })
+
+
+@app.route('/notes', methods=['POST'])
 @cross_origin()
 def create_note():
     body = request.get_json()
@@ -112,11 +143,11 @@ def create_note():
     title = body.get("title")
     content = body.get("content")
     user_id = body.get("user_id")
-    task_id = body.get("task_id")
+    category_id = body.get("category_id")
 
     try:
         new_note = Note(title=title, content=content,
-                        user_id=user_id, task_id=task_id)
+                        user_id=user_id, category_id=category_id, date_created=now.strftime("%d/%m/%Y %H:%M:%S"),)
 
         new_note.insert()
 
@@ -151,7 +182,7 @@ def create_task():
             content=content,
             start_time=start_time,
             time_period=time_period,
-            #user_id=load_user(id),
+            # user_id=load_user(id),
         )
         task.insert()
 
@@ -162,10 +193,12 @@ def create_task():
     except Exception:
         abort(422)
 
+
 @app.route('/tasks', methods=['GET', 'POST'])
 @cross_origin()
 def view_task():
     tasks = Task.query.all()
+<<<<<<< HEAD
     past_tasks = []
     upcoming_tasks = []
     for task in tasks:
@@ -198,3 +231,13 @@ def view_task():
         "success": True,
         "tasks": task_data
     })
+=======
+    # formatted_tasks = [{
+    #    tasks.title: tasks.content: tasks.start_time: tasks.time_period
+    # } for task in tasks]
+
+    return jsonify({
+        "success": True,
+        "tasks": tasks
+    })
+>>>>>>> 63e7d9e67493129f288122bf43390efb92cfee27

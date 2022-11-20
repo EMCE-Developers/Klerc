@@ -1,4 +1,5 @@
 import os
+from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
 
@@ -34,7 +35,6 @@ class User(db.Model, UserMixin):
     note = db.relationship('Note', backref=db.backref('Note', lazy=True))
     task = db.relationship('Task', backref=db.backref('Task', lazy=True))
 
-
     def __repre__(self):
         return f'<User {self.id} {self.first_name} {self.last_name}>'
 
@@ -42,11 +42,11 @@ class User(db.Model, UserMixin):
         db.session.add(self)
         db.session.commit()
 
-    #def delete(self):
+    # def delete(self):
     #    db.session.delete(self)
     #    db.session.commit()
 
-    #def update(self):
+    # def update(self):
     #    db.session.commit()
 
 
@@ -56,9 +56,29 @@ class Note(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String)
     content = db.Column(db.String)
+    date_created = db.Column(db.String, default=datetime.now(), nullable=False)
+
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    #task_id to be removed so task will not rely on Note
+    category_id = db.Column(db.Integer, db.ForeignKey('category.id'))
+
+    # task_id to be removed so task will not rely on Note
     #task_id = db.Column(db.Integer, db.ForeignKey('task.id'))
+
+    def __repre__(self):
+        return f'<User {self.id} {self.title} {self.content}>'
+
+    def insert(self):
+        db.session.add(self)
+        db.session.commit()
+
+
+class Category(db.Model):
+    __tablename__ = 'category'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String)
+
+    note = db.relationship('Note', backref=db.backref('note', lazy=True))
 
     def __repre__(self):
         return f'<User {self.id} {self.title} {self.content}>'
@@ -77,7 +97,7 @@ class Task(db.Model):
     start_time = db.Column(db.String)
     time_period = db.Column(db.String)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    #note to be removed so task will not be dependent on Note
+    # note to be removed so task will not be dependent on Note
     #note = db.relationship('Note', backref=db.backref('note', lazy=True))
 
     def __repre__(self):
