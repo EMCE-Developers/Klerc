@@ -208,12 +208,17 @@ def get_notes():
 @app.route('/notes/<string:category>', methods=['GET'])
 @cross_origin()
 def get_notes_by_category(category):
-    query = db.session.query(Note, Category).join(
-        Note, Category.id == Note.category_id).filter(Category.name.like("%" + category+"%")).all()
 
-    print(query)
+    query = db.session.query(Note, Category, User).join(
+        Note, Category.id == Note.category_id).join(User, Note.user_id == User.id).filter(Category.name.like("%" + category+"%")).all()
+
+    results = [{"note_id": result[0].id, "title": result[0].title,
+                "content": result[0].content, "date_creaed": result[0].date_created, "creator": result[2].first_name} for result in query]
+
     return jsonify({
-        "success": True
+        "success": False if len(results) == 0 else True,
+        "category": category,
+        "results": "Category does not exist!" if len(results) == 0 else results,
     })
 
 
