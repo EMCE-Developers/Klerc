@@ -116,18 +116,22 @@ def users():
 def new_category():
 
     body = request.get_json()
+    name = body.get('name')
+    categories = Category.query.filter_by(name=name).first()
 
-    try:
-        category = Category(name=body.get('name'))
+    if not categories:
+        category = Category(name=name)
         category.insert()
 
         return jsonify({
-            "success": True
+            "success": True,
+            "message": f"Category {name} added successfully!"
         })
-    except Exception as e:
+
+    else:
         return jsonify({
             "success": False,
-            "message": e
+            "message": f"Category {name} already exists!"
         })
 
 # create new note  "methods=['POST']"
