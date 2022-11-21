@@ -172,7 +172,8 @@ def get_note(id):
         # Join was done here in order to get the user's name
 
         query = db.session.query(Note, User).join(
-            Note, User.id == Note.user_id).filter(User.id == id).first()
+            Note, User.id == Note.user_id).filter(Note.id == id).first()
+
         note = query[0]
         user = query[1]
 
@@ -200,7 +201,7 @@ def get_notes():
         Note, User.id == Note.user_id).join(Category, Note.category_id == Category.id).all()
 
     data = [{"id": data[1].id, "title": data[1].title,
-             "content": data[1].content, "date_creaed": data[1].date_created, "creator": data[0].first_name, "category": data[2].name} for data in query]
+             "content": data[1].content, "date_created": data[1].date_created, "creator": data[0].first_name, "category": data[2].name} for data in query]
 
     return jsonify({
         "success": True,
@@ -217,13 +218,67 @@ def get_notes_by_category(category):
         Note, Category.id == Note.category_id).join(User, Note.user_id == User.id).filter(Category.name.like("%" + category+"%")).all()
 
     results = [{"note_id": result[0].id, "title": result[0].title,
-                "content": result[0].content, "date_creaed": result[0].date_created, "creator": result[2].first_name} for result in query]
+                "content": result[0].content, "date_created": result[0].date_created, "creator": result[2].first_name} for result in query]
 
     return jsonify({
         "success": False if len(results) == 0 else True,
         "category": category,
         "results": "Category does not exist!" if len(results) == 0 else results,
     })
+
+
+# Update a note by id
+@app.route('/notes/<int:id>/edit', methods=['PATCH'])
+@cross_origin()
+def edit_note(id):
+    # body includes the json body or form data field we would like to edit.
+    # As of now, I would include id, title, content, creator and category
+    '''
+    Query Format
+    {
+    "id": 8,
+    "title": "The 8th note now ",
+    "content": "The content of the 8th note has just being edited and the category is being tested",
+    "creator": "Kashy",
+    "category": "kaokao"
+}
+    '''
+    body = request.get_json()
+    categories = Category.query.all()
+    # get note id from the body
+    id = body.get("id")
+
+    try:
+        result = db.session.query(Note, User, Category).join(
+            Note, User.id == Note.user_id).join(Category, Note.category_id == Category.id).filter(Note.id == id).first()
+
+        (note, user, category) = result
+        category_name = body.get("category")
+
+        note.title = body.get("title")
+        note.content = body.get("content")
+        user.first_name = body.get("creator")
+
+        # the category should not modify except if the name already exists
+        for cat in categories:
+            if category_name != cat.name:
+                category.name = category.name
+            else:
+                category.name = category_name
+
+        db.session.commit()
+
+        return jsonify({
+            "success": True,
+            "message": "Contents edited, successfully!"
+        })
+
+    except Exception as e:
+        print(e)
+        return jsonify({
+            "success": False,
+            "message": f"Note with id {id} was not found!"
+        })
 
 
 @app.route('/tasks/create', methods=['GET', 'POST'])

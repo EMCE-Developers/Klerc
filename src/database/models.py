@@ -46,8 +46,8 @@ class User(db.Model, UserMixin):
     #    db.session.delete(self)
     #    db.session.commit()
 
-    # def update(self):
-    #    db.session.commit()
+    def update(self):
+        db.session.commit()
 
 
 class Note(db.Model):
@@ -71,6 +71,9 @@ class Note(db.Model):
         db.session.add(self)
         db.session.commit()
 
+    def update(self):
+        db.session.commit()
+
 
 class Category(db.Model):
     __tablename__ = 'category'
@@ -85,6 +88,9 @@ class Category(db.Model):
 
     def insert(self):
         db.session.add(self)
+        db.session.commit()
+
+    def update(self):
         db.session.commit()
 
 
