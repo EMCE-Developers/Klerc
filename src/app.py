@@ -1,7 +1,7 @@
 from flask import Flask, abort, jsonify, request
 from flask_cors import CORS, cross_origin
 from flask_migrate import Migrate
-from flask_login import LoginManager, login_user
+from flask_login import LoginManager, login_user, logout_user, login_required
 from flask_bcrypt import Bcrypt, generate_password_hash, check_password_hash
 from datetime import datetime, timedelta
 from .database.models import Note, db, Task, Category, User, db_drop_and_create_all, setup_db
@@ -93,6 +93,17 @@ def login():
         })
     except Exception:
         abort(422)
+
+
+@app.route('/logout', methods=['GET', 'POST'])
+@cross_origin()
+@login_required
+def logout():
+    logout_user()
+    return({
+        "success": True,
+        "message": "User logged out"
+    })
 
 
 # Made this endpoint to see what is stored in the database
@@ -351,7 +362,6 @@ def view_task():
     current_tasks = []
     
     for task in tasks:
-        print(task.end_time)
         
         match [task.start_time <= current_time, task.end_time >= current_time]:
             case [True, False]:
