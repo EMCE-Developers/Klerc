@@ -288,6 +288,19 @@ def edit_note(note_id):
             "message": f"Note with id {id} was not found!"
         })
 
+@app.route('/notes/<int:note_id>/delete', methods=['DELETE'])
+@cross_origin()
+def delete_note(note_id):
+
+    try:
+        note = Note.query.filter(Note.id == note_id).one_or_none()
+
+        note.delete()
+
+        return {"success": True, "message": f"{str(note.title)} deleted successfully"}
+    except Exception:
+        abort(400)
+
 
 @app.route('/tasks/create', methods=['GET', 'POST'])
 @cross_origin()
@@ -386,9 +399,6 @@ def edit_task(task_id):
         task = Task.query.filter(Task.id == task_id).one_or_none()
         print(task)
 
-        if task is None:
-            abort(404)
-
         task_data = {
             "id": task.id,
             "title": task.title,
@@ -414,9 +424,6 @@ def edit_task_submission(task_id):
     try:
         task_to_update = Task.query.filter(Task.id == task_id).one_or_none()
 
-        if task_to_update is None:
-            abort(404)
-
         task_to_update.title = body.get("title")
         task_to_update.content = body.get("description")
         task_to_update.start_time = body.get("start_time")
@@ -438,9 +445,6 @@ def delete_task(task_id):
 
     try:
         task = Task.query.filter(Task.id == task_id).one_or_none()
-
-        if task is None:
-            abort(404)
 
         task.delete()
 
