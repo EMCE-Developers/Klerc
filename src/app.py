@@ -3,7 +3,7 @@ from flask_cors import CORS, cross_origin
 from flask_migrate import Migrate
 from flask_login import LoginManager, login_user
 from flask_bcrypt import Bcrypt, generate_password_hash, check_password_hash
-from datetime import datetime
+from datetime import datetime, timedelta
 from .database.models import Note, db, Task, Category, User, db_drop_and_create_all, setup_db
 
 app = Flask(__name__)
@@ -16,8 +16,8 @@ login_manager.init_app(app)
 migrate = Migrate(app, db)
 current_time = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 
-# with app.app_context():
-#    db_drop_and_create_all()
+#with app.app_context():
+#   db_drop_and_create_all()
 
 
 @login_manager.user_loader
@@ -55,7 +55,6 @@ def register():
             password=generate_password_hash(password, 10),
             date_created=current_time,
         )
-        print(new_user.password)
         if user := User.query.filter_by(username=username, email=email).first():
             return ({
                 "message": "User already exist"
@@ -95,9 +94,8 @@ def login():
     except Exception:
         abort(422)
 
+
 # Made this endpoint to see what is stored in the database
-
-
 @app.route('/users', methods=['GET', 'POST'])
 @cross_origin()
 def users():
@@ -134,28 +132,9 @@ def new_category():
             "message": f"Category {name} already exists!"
         })
 
-# get all categories
-
-
-@app.route('/categories', methods=['GET'])
-@cross_origin()
-def get_categories():
-    query = Category.query.all()
-
-    categories = {}
-    for category in query:
-        categories[category.id] = category.name
-
-    return jsonify({
-        "success": True,
-        "categories": categories
-    })
-
-
 # create new note  "methods=['POST']"
-
-
-@app.route('/notes', methods=['POST'])
+# changed the create_note endpoint from '/notes.
+@app.route('/notes/create', methods=['POST'])
 @cross_origin()
 def create_note():
     body = request.get_json()
@@ -166,8 +145,10 @@ def create_note():
     category_id = body.get("category_id")
 
     try:
-        new_note = Note(title=title, content=content,
-                        user_id=user_id, category_id=category_id, date_created=current_time,)
+        new_note = Note(
+            title=title, content=content, user_id=user_id, 
+            category_id=category_id, date_created=current_time,
+        )
 
         new_note.insert()
 
@@ -218,8 +199,13 @@ def get_notes():
     query = db.session.query(User, Note, Category).join(
         Note, User.id == Note.user_id).join(Category, Note.category_id == Category.id).all()
 
-    data = [{"id": data[1].id, "title": data[1].title,
-             "content": data[1].content, "date_created": data[1].date_created, "creator": data[0].first_name, "category": data[2].name} for data in query]
+    data = [
+        {
+            "id": data[1].id, "title": data[1].title, "content": data[1].content, 
+            "date_created": data[1].date_created, "creator": data[0].first_name, 
+            "category": data[2].name
+        } for data in query
+    ]
 
     return jsonify({
         "success": True,
@@ -232,23 +218,29 @@ def get_notes():
 @cross_origin()
 def get_notes_by_category(category):
 
-    query = db.session.query(Note, Category, User).join(
-        Note, Category.id == Note.category_id).join(User, Note.user_id == User.id).filter(Category.name.like("%" + category+"%")).all()
+    query = db.session.query(Note, Category, User).join(Note, Category.id == Note.category_id).join(
+        User, Note.user_id == User.id).filter(Category.name.like(f"%{category}%")).all()
 
-    results = [{"note_id": result[0].id, "title": result[0].title,
-                "content": result[0].content, "date_created": result[0].date_created, "creator": result[2].first_name} for result in query]
+
+    results = [
+        {
+            "note_id": result[0].id, "title": result[0].title, 
+            "content": result[0].content, "date_created": result[0].date_created, 
+            "creator": result[2].first_name
+        } for result in query
+    ]
 
     return jsonify({
-        "success": False if len(results) == 0 else True,
-        "category": category,
-        "results": "Category does not exist!" if len(results) == 0 else results,
-    })
+        "success": len(results) != 0, 
+        "category": category, 
+        "results": results or "Category does not exist!"
+        })
 
 
 # Update a note by id
-@app.route('/notes/<int:id>/edit', methods=['PATCH'])
+@app.route('/notes/<int:note_id>/edit', methods=['PATCH'])
 @cross_origin()
-def edit_note(id):
+def edit_note(note_id):
     # body includes the json body or form data field we would like to edit.
     # As of now, I would include id, title, content, creator and category
     '''
@@ -264,11 +256,13 @@ def edit_note(id):
     body = request.get_json()
     categories = Category.query.all()
     # get note id from the body
-    id = body.get("id")
+    # Consider changing id to note_id as it is not a good practice to
+    # use built-in variable names and it might confuse other developers
+    note_id = body.get("note_id")
 
     try:
         result = db.session.query(Note, User, Category).join(
-            Note, User.id == Note.user_id).join(Category, Note.category_id == Category.id).filter(Note.id == id).first()
+            Note, User.id == Note.user_id).join(Category, Note.category_id == Category.id).filter(Note.id == note_id).first()
 
         (note, user, category) = result
         category_name = body.get("category")
@@ -303,18 +297,18 @@ def edit_note(id):
 @cross_origin()
 def create_task():
     body = request.get_json()
-
+    # Note that time period has been dropped and end_time added
     title = body.get("title")
     content = body.get("description")
     start_time = body.get("start_time")
-    time_period = body.get("time_period")
+    end_time = body.get("end_time")
 
     try:
         task = Task(
             title=title,
             content=content,
             start_time=start_time,
-            time_period=time_period,
+            end_time=end_time,
             # user_id=load_user(id),
         )
 
@@ -324,7 +318,7 @@ def create_task():
                 "message": "Please enter Task title"
             })
 
-        if start_time is None and time_period is None:
+        if start_time is None and end_time is None:
             return ({
                 "success": False,
                 "message": "Please enter valid start time and time period for task"
@@ -345,29 +339,39 @@ def view_task():
     tasks = Task.query.all()
     past_tasks = []
     upcoming_tasks = []
+    current_tasks = []
+    
     for task in tasks:
-        # When we implement current task, it should look like,
-        # match [task.end_time < current_time, task.end_time > current_time]
-        #       case [True, Flase]: for current task
-        match [task.start_time < current_time]:
-            case [True]:
+        print(task.end_time)
+        
+        match [task.start_time <= current_time, task.end_time >= current_time]:
+            case [True, False]:
                 past_tasks.append({
                     "id": task.id,
                     "title": task.title,
                     "description": task.content,
                     "start_time": task.start_time,
-                    "time_period": task.time_period
+                    "end_time": task.end_time
                 })
-            case [False]:
+            case [True, True]:
+                current_tasks.append({
+                    "id": task.id,
+                    "title": task.title,
+                    "description": task.content,
+                    "start_time": task.start_time,
+                    "end_time": task.end_time
+                })
+            case [False, True]:
                 upcoming_tasks.append({
                     "id": task.id,
                     "title": task.title,
                     "description": task.content,
                     "start_time": task.start_time,
-                    "time_period": task.time_period
+                    "end_time": task.end_time
                 })
 
     task_data = {
+        "current_tasks": current_tasks,
         "upcoming_tasks": upcoming_tasks,
         "past_tasks": past_tasks
     }
@@ -394,7 +398,7 @@ def edit_task(task_id):
             "title": task.title,
             "description": task.content,
             "start_time": task.start_time,
-            "time_period": task.time_period
+            "end_time": task.end_time
         }
 
         return ({
@@ -420,7 +424,7 @@ def edit_task_submission(task_id):
         task_to_update.title = body.get("title")
         task_to_update.content = body.get("description")
         task_to_update.start_time = body.get("start_time")
-        task_to_update.time_period = body.get("time_period")
+        task_to_update.end_time = body.get("end_time")
 
         task_to_update.update()
 
@@ -447,3 +451,31 @@ def delete_task(task_id):
         return {"success": True, "message": f"{str(task.title)} deleted successfully"}
     except Exception:
         abort(400)
+
+
+@app.errorhandler(422)
+@cross_origin()
+def unprocessable(error):
+    return jsonify({
+        "success": False,
+        "error": 422,
+        "message": "Unprocessable"
+    }), 422
+
+@app.errorhandler(400)
+@cross_origin()
+def bad_request(error):
+    return jsonify({
+        "success": False,
+        "error": 400,
+        "message": "Bad Request"
+    }), 400
+
+@app.errorhandler(404)
+@cross_origin()
+def not_found(error):
+    return jsonify({
+        "success": False,
+        "error": 404,
+        "message": "Resource Not Found"
+    }), 404
