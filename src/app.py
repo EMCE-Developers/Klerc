@@ -134,6 +134,24 @@ def new_category():
             "message": f"Category {name} already exists!"
         })
 
+# get all categories
+
+
+@app.route('/categories', methods=['GET'])
+@cross_origin()
+def get_categories():
+    query = Category.query.all()
+
+    categories = {}
+    for category in query:
+        categories[category.id] = category.name
+
+    return jsonify({
+        "success": True,
+        "categories": categories
+    })
+
+
 # create new note  "methods=['POST']"
 
 
