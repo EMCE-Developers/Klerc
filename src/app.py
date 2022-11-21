@@ -145,7 +145,10 @@ def create_note():
     category_id = body.get("category_id")
 
     try:
-        new_note = Note(title=title, content=content, user_id=user_id, category_id=category_id, date_created=current_time,)
+        new_note = Note(
+            title=title, content=content, user_id=user_id, 
+            category_id=category_id, date_created=current_time,
+        )
 
         new_note.insert()
 
@@ -196,8 +199,13 @@ def get_notes():
     query = db.session.query(User, Note, Category).join(
         Note, User.id == Note.user_id).join(Category, Note.category_id == Category.id).all()
 
-    data = [{"id": data[1].id, "title": data[1].title,
-             "content": data[1].content, "date_created": data[1].date_created, "creator": data[0].first_name, "category": data[2].name} for data in query]
+    data = [
+        {
+            "id": data[1].id, "title": data[1].title, "content": data[1].content, 
+            "date_created": data[1].date_created, "creator": data[0].first_name, 
+            "category": data[2].name
+        } for data in query
+    ]
 
     return jsonify({
         "success": True,
@@ -210,23 +218,29 @@ def get_notes():
 @cross_origin()
 def get_notes_by_category(category):
 
-    query = db.session.query(Note, Category, User).join(
-        Note, Category.id == Note.category_id).join(User, Note.user_id == User.id).filter(Category.name.like("%" + category+"%")).all()
+    query = db.session.query(Note, Category, User).join(Note, Category.id == Note.category_id).join(
+        User, Note.user_id == User.id).filter(Category.name.like(f"%{category}%")).all()
 
-    results = [{"note_id": result[0].id, "title": result[0].title,
-                "content": result[0].content, "date_created": result[0].date_created, "creator": result[2].first_name} for result in query]
+
+    results = [
+        {
+            "note_id": result[0].id, "title": result[0].title, 
+            "content": result[0].content, "date_created": result[0].date_created, 
+            "creator": result[2].first_name
+        } for result in query
+    ]
 
     return jsonify({
-        "success": False if len(results) == 0 else True,
-        "category": category,
-        "results": "Category does not exist!" if len(results) == 0 else results,
-    })
+        "success": len(results) != 0, 
+        "category": category, 
+        "results": results or "Category does not exist!"
+        })
 
 
 # Update a note by id
-@app.route('/notes/<int:id>/edit', methods=['PATCH'])
+@app.route('/notes/<int:note_id>/edit', methods=['PATCH'])
 @cross_origin()
-def edit_note(id):
+def edit_note(note_id):
     # body includes the json body or form data field we would like to edit.
     # As of now, I would include id, title, content, creator and category
     '''
@@ -242,11 +256,13 @@ def edit_note(id):
     body = request.get_json()
     categories = Category.query.all()
     # get note id from the body
-    id = body.get("id")
+    # Consider changing id to note_id as it is not a good practice to
+    # use built-in variable names and it might confuse other developers
+    note_id = body.get("note_id")
 
     try:
         result = db.session.query(Note, User, Category).join(
-            Note, User.id == Note.user_id).join(Category, Note.category_id == Category.id).filter(Note.id == id).first()
+            Note, User.id == Note.user_id).join(Category, Note.category_id == Category.id).filter(Note.id == note_id).first()
 
         (note, user, category) = result
         category_name = body.get("category")
@@ -435,3 +451,31 @@ def delete_task(task_id):
         return {"success": True, "message": f"{str(task.title)} deleted successfully"}
     except Exception:
         abort(400)
+
+
+@app.errorhandler(422)
+@cross_origin()
+def unprocessable(error):
+    return jsonify({
+        "success": False,
+        "error": 422,
+        "message": "Unprocessable"
+    }), 422
+
+@app.errorhandler(400)
+@cross_origin()
+def bad_request(error):
+    return jsonify({
+        "success": False,
+        "error": 400,
+        "message": "Bad Request"
+    }), 400
+
+@app.errorhandler(404)
+@cross_origin()
+def not_found(error):
+    return jsonify({
+        "success": False,
+        "error": 404,
+        "message": "Resource Not Found"
+    }), 404
