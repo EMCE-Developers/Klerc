@@ -261,8 +261,8 @@ def edit_note(note_id):
     note_id = body.get("note_id")
 
     try:
-        result = db.session.query(Note, User, Category).join(
-            Note, User.id == Note.user_id).join(Category, Note.category_id == Category.id).filter(Note.id == note_id).first()
+        result = db.session.query(Note, User, Category).join(Note, User.id == Note.user_id).join(
+            Category, Note.category_id == Category.id).filter(Note.id == note_id).first()
 
         (note, user, category) = result
         category_name = body.get("category")
@@ -273,11 +273,7 @@ def edit_note(note_id):
 
         # the category should not modify except if the name already exists
         for cat in categories:
-            if category_name != cat.name:
-                category.name = category.name
-            else:
-                category.name = category_name
-
+            category.name = category.name if category_name != cat.name else category_name
         db.session.commit()
 
         return jsonify({
