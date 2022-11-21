@@ -1,7 +1,7 @@
 from flask import Flask, abort, jsonify, request
 from flask_cors import CORS, cross_origin
 from flask_migrate import Migrate
-from flask_login import LoginManager, login_user
+from flask_login import LoginManager, login_user, logout_user, login_required
 from flask_bcrypt import Bcrypt, generate_password_hash, check_password_hash
 from datetime import datetime, timedelta
 from .database.models import Note, db, Task, Category, User, db_drop_and_create_all, setup_db
@@ -93,6 +93,17 @@ def login():
         })
     except Exception:
         abort(422)
+
+
+@app.route('/logout', methods=['GET', 'POST'])
+@cross_origin()
+@login_required
+def logout():
+    logout_user()
+    return({
+        "success": True,
+        "message": "User logged out"
+    })
 
 
 # Made this endpoint to see what is stored in the database
@@ -261,8 +272,8 @@ def edit_note(note_id):
     note_id = body.get("note_id")
 
     try:
-        result = db.session.query(Note, User, Category).join(
-            Note, User.id == Note.user_id).join(Category, Note.category_id == Category.id).filter(Note.id == note_id).first()
+        result = db.session.query(Note, User, Category).join(Note, User.id == Note.user_id).join(
+            Category, Note.category_id == Category.id).filter(Note.id == note_id).first()
 
         (note, user, category) = result
         category_name = body.get("category")
@@ -273,11 +284,7 @@ def edit_note(note_id):
 
         # the category should not modify except if the name already exists
         for cat in categories:
-            if category_name != cat.name:
-                category.name = category.name
-            else:
-                category.name = category_name
-
+            category.name = category.name if category_name != cat.name else category_name
         db.session.commit()
 
         return jsonify({
@@ -291,6 +298,19 @@ def edit_note(note_id):
             "success": False,
             "message": f"Note with id {id} was not found!"
         })
+
+@app.route('/notes/<int:note_id>/delete', methods=['DELETE'])
+@cross_origin()
+def delete_note(note_id):
+
+    try:
+        note = Note.query.filter(Note.id == note_id).one_or_none()
+
+        note.delete()
+
+        return {"success": True, "message": f"{str(note.title)} deleted successfully"}
+    except Exception:
+        abort(400)
 
 
 @app.route('/tasks/create', methods=['GET', 'POST'])
@@ -342,7 +362,6 @@ def view_task():
     current_tasks = []
     
     for task in tasks:
-        print(task.end_time)
         
         match [task.start_time <= current_time, task.end_time >= current_time]:
             case [True, False]:
@@ -390,9 +409,6 @@ def edit_task(task_id):
         task = Task.query.filter(Task.id == task_id).one_or_none()
         print(task)
 
-        if task is None:
-            abort(404)
-
         task_data = {
             "id": task.id,
             "title": task.title,
@@ -418,9 +434,6 @@ def edit_task_submission(task_id):
     try:
         task_to_update = Task.query.filter(Task.id == task_id).one_or_none()
 
-        if task_to_update is None:
-            abort(404)
-
         task_to_update.title = body.get("title")
         task_to_update.content = body.get("description")
         task_to_update.start_time = body.get("start_time")
@@ -442,9 +455,6 @@ def delete_task(task_id):
 
     try:
         task = Task.query.filter(Task.id == task_id).one_or_none()
-
-        if task is None:
-            abort(404)
 
         task.delete()
 
