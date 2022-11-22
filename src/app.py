@@ -1,9 +1,9 @@
 from flask import Flask, abort, jsonify, request
 from flask_cors import CORS, cross_origin
 from flask_migrate import Migrate
-from flask_login import LoginManager, login_user, logout_user, login_required
+from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from flask_bcrypt import Bcrypt, generate_password_hash, check_password_hash
-from datetime import datetime, timedelta
+from datetime import datetime
 from .database.models import Note, db, Task, Category, User, db_drop_and_create_all, setup_db
 
 app = Flask(__name__)
@@ -21,8 +21,11 @@ current_time = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 
 
 @login_manager.user_loader
-def load_user(id):
-    return User.query.get(id)
+def load_user(user_id):
+    try:
+        return User.query.get(int(user_id))
+    except Exception:
+        return None
 
 
 @app.route('/')
@@ -87,6 +90,7 @@ def login():
             })
 
         login_user(user)
+        print(current_user.username)
         return ({
             "success": True,
             "message": "Login successful"
@@ -113,7 +117,7 @@ def users():
     users = User.query.all()
     formatted_users = [
         {user.date_created: user.username, "id": user.id} for user in users]
-
+    
     return jsonify({
         "success": True,
         "users": formatted_users
@@ -122,6 +126,7 @@ def users():
 
 @app.route('/categories', methods=['POST'])
 @cross_origin()
+@login_required
 def new_category():
 
     body = request.get_json()
@@ -147,6 +152,7 @@ def new_category():
 # changed the create_note endpoint from '/notes.
 @app.route('/notes/create', methods=['POST'])
 @cross_origin()
+@login_required
 def create_note():
     body = request.get_json()
 
@@ -176,6 +182,7 @@ def create_note():
 
 @app.route('/notes/<int:id>', methods=['GET'])
 @cross_origin()
+@login_required
 def get_note(id):
 
     try:
@@ -205,6 +212,7 @@ def get_note(id):
 # get all notes
 @app.route('/notes', methods=['GET'])
 @cross_origin()
+@login_required
 def get_notes():
 
     query = db.session.query(User, Note, Category).join(
@@ -227,6 +235,7 @@ def get_notes():
 # get all notes by category
 @app.route('/notes/<string:category>', methods=['GET'])
 @cross_origin()
+@login_required
 def get_notes_by_category(category):
 
     query = db.session.query(Note, Category, User).join(Note, Category.id == Note.category_id).join(
@@ -251,6 +260,7 @@ def get_notes_by_category(category):
 # Update a note by id
 @app.route('/notes/<int:note_id>/edit', methods=['PATCH'])
 @cross_origin()
+@login_required
 def edit_note(note_id):
     # body includes the json body or form data field we would like to edit.
     # As of now, I would include id, title, content, creator and category
@@ -301,6 +311,7 @@ def edit_note(note_id):
 
 @app.route('/notes/<int:note_id>/delete', methods=['DELETE'])
 @cross_origin()
+@login_required
 def delete_note(note_id):
 
     try:
@@ -315,6 +326,7 @@ def delete_note(note_id):
 
 @app.route('/tasks/create', methods=['GET', 'POST'])
 @cross_origin()
+@login_required
 def create_task():
     body = request.get_json()
     # Note that time period has been dropped and end_time added
@@ -329,7 +341,7 @@ def create_task():
             content=content,
             start_time=start_time,
             end_time=end_time,
-            # user_id=load_user(id),
+            user_id=current_user.id,
         )
 
         if title is None:
@@ -344,7 +356,7 @@ def create_task():
                 "message": "Please enter valid start time and time period for task"
             })
         task.insert()
-
+        print(current_user.username)
         return ({
             'success': True,
             "message": "Task created successfully"
@@ -357,7 +369,7 @@ def create_task():
 @cross_origin()
 @login_required
 def view_task():
-    tasks = Task.query.all()
+    tasks = Task.query.join(User).filter(User.id==int(current_user.id)).all()
     past_tasks = []
     upcoming_tasks = []
     current_tasks = []
@@ -396,7 +408,7 @@ def view_task():
             "upcoming_tasks": upcoming_tasks,
             "past_tasks": past_tasks
         }
-
+        print(current_user.username)
         return jsonify({
             "success": True,
             "tasks": task_data
@@ -407,11 +419,11 @@ def view_task():
 
 @app.route('/tasks/<int:task_id>/edit', methods=['GET'])
 @cross_origin()
+@login_required
 def edit_task(task_id):
 
     try:
-        task = Task.query.filter(Task.id == task_id).one_or_none()
-        print(task)
+        task = Task.query.join(User).filter(User.id==current_user.id).filter(Task.id == task_id).one_or_none()
 
         task_data = {
             "id": task.id,
@@ -420,7 +432,7 @@ def edit_task(task_id):
             "start_time": task.start_time,
             "end_time": task.end_time
         }
-
+        print(current_user.username)
         return ({
             "success": True,
             "task": task_data
@@ -431,12 +443,13 @@ def edit_task(task_id):
 
 @app.route('/tasks/<int:task_id>/edit', methods=['POST', 'PATCH'])
 @cross_origin()
+@login_required
 def edit_task_submission(task_id):
 
     body = request.get_json()
 
     try:
-        task_to_update = Task.query.filter(Task.id == task_id).one_or_none()
+        task_to_update = Task.query.join(User).filter(User.id==current_user.id).filter(Task.id == task_id).one_or_none()
 
         task_to_update.title = body.get("title")
         task_to_update.content = body.get("description")
@@ -450,15 +463,16 @@ def edit_task_submission(task_id):
             "message": "Task updated successfully"
         })
     except Exception:
-        abort(422)
+        abort(400)
 
 
 @app.route('/tasks/<int:task_id>/delete', methods=['DELETE'])
 @cross_origin()
+@login_required
 def delete_task(task_id):
 
     try:
-        task = Task.query.filter(Task.id == task_id).one_or_none()
+        task = Task.query.join(User).filter(User.id==current_user.id).filter(Task.id == task_id).one_or_none()
 
         task.delete()
 
