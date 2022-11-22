@@ -16,7 +16,7 @@ Klerc is a app intended to help individuals keep notes and schedule tasks. The a
 
 - To run the application run the following commands:
     ```
-    export FLASK_APP=flaskr
+    export FLASK_APP=app.py
     export FLASK_DEBUG=True
     flask run
     ```

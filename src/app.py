@@ -1,9 +1,9 @@
 from flask import Flask, abort, jsonify, request
 from flask_cors import CORS, cross_origin
 from flask_migrate import Migrate
-from flask_login import LoginManager, login_user, logout_user, login_required
+from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from flask_bcrypt import Bcrypt, generate_password_hash, check_password_hash
-from datetime import datetime, timedelta
+from datetime import datetime
 from .database.models import Note, db, Task, Category, User, db_drop_and_create_all, setup_db
 
 app = Flask(__name__)
@@ -21,8 +21,11 @@ current_time = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 
 
 @login_manager.user_loader
-def load_user(id):
-    return User.query.get(id)
+def load_user(user_id):
+    try:
+        return User.query.get(int(user_id))
+    except Exception:
+        return None
 
 
 @app.route('/')
@@ -113,15 +116,16 @@ def users():
     users = User.query.all()
     formatted_users = [
         {user.date_created: user.username, "id": user.id} for user in users]
-
+    
     return jsonify({
         "success": True,
         "users": formatted_users
     })
 
 
-@app.route('/categories', methods=['POST'])
+@app.route('/categories/create', methods=['POST'])
 @cross_origin()
+@login_required
 def new_category():
 
     body = request.get_json()
@@ -129,7 +133,7 @@ def new_category():
     categories = Category.query.filter_by(name=name).first()
 
     if not categories:
-        category = Category(name=name)
+        category = Category(name=name, user_id=current_user.id)
         category.insert()
 
         return jsonify({
@@ -147,17 +151,19 @@ def new_category():
 # changed the create_note endpoint from '/notes.
 @app.route('/notes/create', methods=['POST'])
 @cross_origin()
+@login_required
 def create_note():
     body = request.get_json()
 
     title = body.get("title")
     content = body.get("content")
-    user_id = body.get("user_id")
+    # The user_id is being removed as current_user.id==user_id
+    #user_id = body.get("user_id")
     category_id = body.get("category_id")
 
     try:
         new_note = Note(
-            title=title, content=content, user_id=user_id, 
+            title=title, content=content, user_id=current_user.id, 
             category_id=category_id, date_created=current_time,
         )
 
@@ -174,26 +180,37 @@ def create_note():
         })
 
 
-@app.route('/notes/<int:id>', methods=['GET'])
+@app.route('/notes/<int:note_id>', methods=['GET'])
 @cross_origin()
-def get_note(id):
+@login_required
+def get_note(note_id):
 
     try:
         # Join was done here in order to get the user's name
 
-        query = db.session.query(Note, User).join(
-            Note, User.id == Note.user_id).filter(Note.id == id).first()
+        #query = db.session.query(Note, User).join(
+        #    Note, User.id == Note.user_id).filter(Note.id == id).first()
 
-        note = query[0]
-        user = query[1]
+        #note = query[0]
+        #user = query[1]
 
-        return jsonify({
-            "creator": user.first_name,
-            "id": note.id,
-            "title": note.title,
-            "content": note.content,
-            "date_created": note.date_created
-        })
+        #return jsonify({
+        #    "creator": user.first_name,
+        #    "id": note.id,
+        #    "title": note.title,
+        #    "content": note.content,
+        #    "date_created": note.date_created
+        #})
+
+        if note := Note.query.join(User).filter(User.id==current_user.id).filter(Note.id==note_id).one_or_none():
+            return jsonify({
+                "title": note.title,
+                "content": note.content,
+                "date_created": note.date_created,
+                "id": note.id
+            })
+        else:
+            abort(404)
     except Exception as e:
         print(e)
         return jsonify({
@@ -205,28 +222,48 @@ def get_note(id):
 # get all notes
 @app.route('/notes', methods=['GET'])
 @cross_origin()
+@login_required
 def get_notes():
 
-    query = db.session.query(User, Note, Category).join(
-        Note, User.id == Note.user_id).join(Category, Note.category_id == Category.id).all()
+    #query = db.session.query(User, Note, Category).join(
+    #    Note, User.id == Note.user_id).join(Category, Note.category_id == Category.id).all()
 
-    data = [
-        {
-            "id": data[1].id, "title": data[1].title, "content": data[1].content, 
-            "date_created": data[1].date_created, "creator": data[0].first_name, 
-            "category": data[2].name
-        } for data in query
-    ]
+    #data = [
+    #    {
+    #        "id": data[1].id, "title": data[1].title, "content": data[1].content, 
+    #        "date_created": data[1].date_created, "creator": data[0].first_name, 
+    #        "category": data[2].name
+    #    } for data in query
+    #]
 
-    return jsonify({
-        "success": True,
-        "notes": data
-    })
+    #return jsonify({
+    #    "success": True,
+    #    "notes": data
+    #})
+    # modified the notes endpoint
+    note_data = []
+    try:
+        notes = Note.query.join(User).filter(User.id==current_user.id).all()
+
+        note_data.extend(
+            {
+                "title": note.title, "content": note.content, 
+                "date_created": note.date_created, "id": note.id
+            } for note in notes)
+
+        result = {"notes_data" : note_data}
+        return jsonify({
+            "success": True,
+            "notes": result
+        })
+    except Exception:
+        abort(404)
 
 
 # get all notes by category
 @app.route('/notes/<string:category>', methods=['GET'])
 @cross_origin()
+@login_required
 def get_notes_by_category(category):
 
     query = db.session.query(Note, Category, User).join(Note, Category.id == Note.category_id).join(
@@ -251,6 +288,7 @@ def get_notes_by_category(category):
 # Update a note by id
 @app.route('/notes/<int:note_id>/edit', methods=['PATCH'])
 @cross_origin()
+@login_required
 def edit_note(note_id):
     # body includes the json body or form data field we would like to edit.
     # As of now, I would include id, title, content, creator and category
@@ -301,6 +339,7 @@ def edit_note(note_id):
 
 @app.route('/notes/<int:note_id>/delete', methods=['DELETE'])
 @cross_origin()
+@login_required
 def delete_note(note_id):
 
     try:
@@ -315,6 +354,7 @@ def delete_note(note_id):
 
 @app.route('/tasks/create', methods=['GET', 'POST'])
 @cross_origin()
+@login_required
 def create_task():
     body = request.get_json()
     # Note that time period has been dropped and end_time added
@@ -329,7 +369,7 @@ def create_task():
             content=content,
             start_time=start_time,
             end_time=end_time,
-            # user_id=load_user(id),
+            user_id=current_user.id,
         )
 
         if title is None:
@@ -344,7 +384,6 @@ def create_task():
                 "message": "Please enter valid start time and time period for task"
             })
         task.insert()
-
         return ({
             'success': True,
             "message": "Task created successfully"
@@ -355,59 +394,62 @@ def create_task():
 
 @app.route('/tasks', methods=['GET', 'POST'])
 @cross_origin()
+@login_required
 def view_task():
-    tasks = Task.query.all()
+    tasks = Task.query.join(User).filter(User.id==int(current_user.id)).all()
     past_tasks = []
     upcoming_tasks = []
     current_tasks = []
     
-    for task in tasks:
-        
-        match [task.start_time <= current_time, task.end_time >= current_time]:
-            case [True, False]:
-                past_tasks.append({
-                    "id": task.id,
-                    "title": task.title,
-                    "description": task.content,
-                    "start_time": task.start_time,
-                    "end_time": task.end_time
-                })
-            case [True, True]:
-                current_tasks.append({
-                    "id": task.id,
-                    "title": task.title,
-                    "description": task.content,
-                    "start_time": task.start_time,
-                    "end_time": task.end_time
-                })
-            case [False, True]:
-                upcoming_tasks.append({
-                    "id": task.id,
-                    "title": task.title,
-                    "description": task.content,
-                    "start_time": task.start_time,
-                    "end_time": task.end_time
-                })
+    try:
+        for task in tasks:
 
-    task_data = {
-        "current_tasks": current_tasks,
-        "upcoming_tasks": upcoming_tasks,
-        "past_tasks": past_tasks
-    }
+            match [task.start_time <= current_time, task.end_time >= current_time]:
+                case [True, False]:
+                    past_tasks.append({
+                        "id": task.id,
+                        "title": task.title,
+                        "description": task.content,
+                        "start_time": task.start_time,
+                        "end_time": task.end_time
+                    })
+                case [True, True]:
+                    current_tasks.append({
+                        "id": task.id,
+                        "title": task.title,
+                        "description": task.content,
+                        "start_time": task.start_time,
+                        "end_time": task.end_time
+                    })
+                case [False, True]:
+                    upcoming_tasks.append({
+                        "id": task.id,
+                        "title": task.title,
+                        "description": task.content,
+                        "start_time": task.start_time,
+                        "end_time": task.end_time
+                    })
 
-    return jsonify({
-        "success": True,
-        "tasks": task_data
-    })
+        task_data = {
+            "current_tasks": current_tasks,
+            "upcoming_tasks": upcoming_tasks,
+            "past_tasks": past_tasks
+        }
+        return jsonify({
+            "success": True,
+            "tasks": task_data
+        })
+    except Exception:
+        abort(404)
 
 
 @app.route('/tasks/<int:task_id>/edit', methods=['GET'])
 @cross_origin()
+@login_required
 def edit_task(task_id):
 
     try:
-        task = Task.query.filter(Task.id == task_id).one_or_none()
-        print(task)
+        task = Task.query.join(User).filter(User.id==current_user.id).filter(Task.id == task_id).one_or_none()
 
         task_data = {
             "id": task.id,
@@ -416,7 +458,6 @@ def edit_task(task_id):
             "start_time": task.start_time,
             "end_time": task.end_time
         }
-
         return ({
             "success": True,
             "task": task_data
@@ -427,12 +468,13 @@ def edit_task(task_id):
 
 @app.route('/tasks/<int:task_id>/edit', methods=['POST', 'PATCH'])
 @cross_origin()
+@login_required
 def edit_task_submission(task_id):
 
     body = request.get_json()
 
     try:
-        task_to_update = Task.query.filter(Task.id == task_id).one_or_none()
+        task_to_update = Task.query.join(User).filter(User.id==current_user.id).filter(Task.id == task_id).one_or_none()
 
         task_to_update.title = body.get("title")
         task_to_update.content = body.get("description")
@@ -446,15 +488,16 @@ def edit_task_submission(task_id):
             "message": "Task updated successfully"
         })
     except Exception:
-        abort(422)
+        abort(400)
 
 
 @app.route('/tasks/<int:task_id>/delete', methods=['DELETE'])
 @cross_origin()
+@login_required
 def delete_task(task_id):
 
     try:
-        task = Task.query.filter(Task.id == task_id).one_or_none()
+        task = Task.query.join(User).filter(User.id==current_user.id).filter(Task.id == task_id).one_or_none()
 
         task.delete()
 
@@ -462,15 +505,6 @@ def delete_task(task_id):
     except Exception:
         abort(400)
 
-
-@app.errorhandler(422)
-@cross_origin()
-def unprocessable(error):
-    return jsonify({
-        "success": False,
-        "error": 422,
-        "message": "Unprocessable"
-    }), 422
 
 @app.errorhandler(400)
 @cross_origin()
@@ -481,6 +515,15 @@ def bad_request(error):
         "message": "Bad Request"
     }), 400
 
+@app.errorhandler(401)
+@cross_origin()
+def unprocessable(error):
+    return jsonify({
+        "success": False,
+        "error": 401,
+        "message": "Unauthorized"
+    }), 401
+
 @app.errorhandler(404)
 @cross_origin()
 def not_found(error):
@@ -489,3 +532,12 @@ def not_found(error):
         "error": 404,
         "message": "Resource Not Found"
     }), 404
+
+@app.errorhandler(422)
+@cross_origin()
+def unprocessable(error):
+    return jsonify({
+        "success": False,
+        "error": 422,
+        "message": "Unprocessable"
+    }), 422
