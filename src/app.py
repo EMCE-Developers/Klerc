@@ -355,50 +355,54 @@ def create_task():
 
 @app.route('/tasks', methods=['GET', 'POST'])
 @cross_origin()
+@login_required
 def view_task():
     tasks = Task.query.all()
     past_tasks = []
     upcoming_tasks = []
     current_tasks = []
     
-    for task in tasks:
-        
-        match [task.start_time <= current_time, task.end_time >= current_time]:
-            case [True, False]:
-                past_tasks.append({
-                    "id": task.id,
-                    "title": task.title,
-                    "description": task.content,
-                    "start_time": task.start_time,
-                    "end_time": task.end_time
-                })
-            case [True, True]:
-                current_tasks.append({
-                    "id": task.id,
-                    "title": task.title,
-                    "description": task.content,
-                    "start_time": task.start_time,
-                    "end_time": task.end_time
-                })
-            case [False, True]:
-                upcoming_tasks.append({
-                    "id": task.id,
-                    "title": task.title,
-                    "description": task.content,
-                    "start_time": task.start_time,
-                    "end_time": task.end_time
-                })
+    try:
+        for task in tasks:
 
-    task_data = {
-        "current_tasks": current_tasks,
-        "upcoming_tasks": upcoming_tasks,
-        "past_tasks": past_tasks
-    }
+            match [task.start_time <= current_time, task.end_time >= current_time]:
+                case [True, False]:
+                    past_tasks.append({
+                        "id": task.id,
+                        "title": task.title,
+                        "description": task.content,
+                        "start_time": task.start_time,
+                        "end_time": task.end_time
+                    })
+                case [True, True]:
+                    current_tasks.append({
+                        "id": task.id,
+                        "title": task.title,
+                        "description": task.content,
+                        "start_time": task.start_time,
+                        "end_time": task.end_time
+                    })
+                case [False, True]:
+                    upcoming_tasks.append({
+                        "id": task.id,
+                        "title": task.title,
+                        "description": task.content,
+                        "start_time": task.start_time,
+                        "end_time": task.end_time
+                    })
 
-    return jsonify({
-        "success": True,
-        "tasks": task_data
-    })
+        task_data = {
+            "current_tasks": current_tasks,
+            "upcoming_tasks": upcoming_tasks,
+            "past_tasks": past_tasks
+        }
+
+        return jsonify({
+            "success": True,
+            "tasks": task_data
+        })
+    except Exception:
+        abort(404)
 
 
 @app.route('/tasks/<int:task_id>/edit', methods=['GET'])
@@ -463,15 +467,6 @@ def delete_task(task_id):
         abort(400)
 
 
-@app.errorhandler(422)
-@cross_origin()
-def unprocessable(error):
-    return jsonify({
-        "success": False,
-        "error": 422,
-        "message": "Unprocessable"
-    }), 422
-
 @app.errorhandler(400)
 @cross_origin()
 def bad_request(error):
@@ -481,6 +476,15 @@ def bad_request(error):
         "message": "Bad Request"
     }), 400
 
+@app.errorhandler(401)
+@cross_origin()
+def unprocessable(error):
+    return jsonify({
+        "success": False,
+        "error": 401,
+        "message": "Unauthorized"
+    }), 401
+
 @app.errorhandler(404)
 @cross_origin()
 def not_found(error):
@@ -489,3 +493,12 @@ def not_found(error):
         "error": 404,
         "message": "Resource Not Found"
     }), 404
+
+@app.errorhandler(422)
+@cross_origin()
+def unprocessable(error):
+    return jsonify({
+        "success": False,
+        "error": 422,
+        "message": "Unprocessable"
+    }), 422
