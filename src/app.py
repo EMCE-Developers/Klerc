@@ -90,7 +90,6 @@ def login():
             })
 
         login_user(user)
-        print(current_user.username)
         return ({
             "success": True,
             "message": "Login successful"
@@ -124,7 +123,7 @@ def users():
     })
 
 
-@app.route('/categories', methods=['POST'])
+@app.route('/categories/create', methods=['POST'])
 @cross_origin()
 @login_required
 def new_category():
@@ -134,7 +133,7 @@ def new_category():
     categories = Category.query.filter_by(name=name).first()
 
     if not categories:
-        category = Category(name=name)
+        category = Category(name=name, user_id=current_user.id)
         category.insert()
 
         return jsonify({
@@ -158,12 +157,13 @@ def create_note():
 
     title = body.get("title")
     content = body.get("content")
-    user_id = body.get("user_id")
+    # The user_id is being removed as current_user.id==user_id
+    #user_id = body.get("user_id")
     category_id = body.get("category_id")
 
     try:
         new_note = Note(
-            title=title, content=content, user_id=user_id, 
+            title=title, content=content, user_id=current_user.id, 
             category_id=category_id, date_created=current_time,
         )
 

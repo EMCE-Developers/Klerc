@@ -33,6 +33,8 @@ class User(db.Model, UserMixin):
     password = db.Column(db.String)
     date_created = db.Column(db.String)
     note = db.relationship('Note', backref=db.backref('Note', lazy=True))
+    # Added category relationship column
+    category = db.relationship('Category', backref=db.backref('Category', lazy=True))
     task = db.relationship('Task', backref=db.backref('Task', lazy=True))
 
     def __repre__(self):
@@ -80,7 +82,8 @@ class Category(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
-
+    # Added user_id 
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     note = db.relationship('Note', backref=db.backref('note', lazy=True))
 
     def __repre__(self):
