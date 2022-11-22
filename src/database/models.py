@@ -46,8 +46,8 @@ class User(db.Model, UserMixin):
     #    db.session.delete(self)
     #    db.session.commit()
 
-    # def update(self):
-    #    db.session.commit()
+    def update(self):
+        db.session.commit()
 
 
 class Note(db.Model):
@@ -71,6 +71,9 @@ class Note(db.Model):
         db.session.add(self)
         db.session.commit()
 
+    def update(self):
+        db.session.commit()
+
 
 class Category(db.Model):
     __tablename__ = 'category'
@@ -87,6 +90,9 @@ class Category(db.Model):
         db.session.add(self)
         db.session.commit()
 
+    def update(self):
+        db.session.commit()
+
 
 class Task(db.Model):
     __tablename__ = 'task'
@@ -95,10 +101,12 @@ class Task(db.Model):
     title = db.Column(db.String)
     content = db.Column(db.String)
     start_time = db.Column(db.String)
-    time_period = db.Column(db.String)
+    # Removing the time_period and adding
+    # end_time
+    #time_period = db.Column(db.String)
+    end_time = db.Column(db.String)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    # note to be removed so task will not be dependent on Note
-    #note = db.relationship('Note', backref=db.backref('note', lazy=True))
+
 
     def __repre__(self):
         return f'<User {self.id} {self.start_time} {self.time_period}>'
