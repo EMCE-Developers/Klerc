@@ -180,27 +180,37 @@ def create_note():
         })
 
 
-@app.route('/notes/<int:id>', methods=['GET'])
+@app.route('/notes/<int:note_id>', methods=['GET'])
 @cross_origin()
 @login_required
-def get_note(id):
+def get_note(note_id):
 
     try:
         # Join was done here in order to get the user's name
 
-        query = db.session.query(Note, User).join(
-            Note, User.id == Note.user_id).filter(Note.id == id).first()
+        #query = db.session.query(Note, User).join(
+        #    Note, User.id == Note.user_id).filter(Note.id == id).first()
 
-        note = query[0]
-        user = query[1]
+        #note = query[0]
+        #user = query[1]
 
-        return jsonify({
-            "creator": user.first_name,
-            "id": note.id,
-            "title": note.title,
-            "content": note.content,
-            "date_created": note.date_created
-        })
+        #return jsonify({
+        #    "creator": user.first_name,
+        #    "id": note.id,
+        #    "title": note.title,
+        #    "content": note.content,
+        #    "date_created": note.date_created
+        #})
+
+        if note := Note.query.join(User).filter(User.id==current_user.id).filter(Note.id==note_id).one_or_none():
+            return jsonify({
+                "title": note.title,
+                "content": note.content,
+                "date_created": note.date_created,
+                "id": note.id
+            })
+        else:
+            abort(404)
     except Exception as e:
         print(e)
         return jsonify({
@@ -215,21 +225,39 @@ def get_note(id):
 @login_required
 def get_notes():
 
-    query = db.session.query(User, Note, Category).join(
-        Note, User.id == Note.user_id).join(Category, Note.category_id == Category.id).all()
+    #query = db.session.query(User, Note, Category).join(
+    #    Note, User.id == Note.user_id).join(Category, Note.category_id == Category.id).all()
 
-    data = [
-        {
-            "id": data[1].id, "title": data[1].title, "content": data[1].content, 
-            "date_created": data[1].date_created, "creator": data[0].first_name, 
-            "category": data[2].name
-        } for data in query
-    ]
+    #data = [
+    #    {
+    #        "id": data[1].id, "title": data[1].title, "content": data[1].content, 
+    #        "date_created": data[1].date_created, "creator": data[0].first_name, 
+    #        "category": data[2].name
+    #    } for data in query
+    #]
 
-    return jsonify({
-        "success": True,
-        "notes": data
-    })
+    #return jsonify({
+    #    "success": True,
+    #    "notes": data
+    #})
+    # modified the notes endpoint
+    note_data = []
+    try:
+        notes = Note.query.join(User).filter(User.id==current_user.id).all()
+
+        note_data.extend(
+            {
+                "title": note.title, "content": note.content, 
+                "date_created": note.date_created, "id": note.id
+            } for note in notes)
+
+        result = {"notes_data" : note_data}
+        return jsonify({
+            "success": True,
+            "notes": result
+        })
+    except Exception:
+        abort(404)
 
 
 # get all notes by category
