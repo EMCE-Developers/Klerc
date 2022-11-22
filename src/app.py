@@ -356,7 +356,6 @@ def create_task():
                 "message": "Please enter valid start time and time period for task"
             })
         task.insert()
-        print(current_user.username)
         return ({
             'success': True,
             "message": "Task created successfully"
@@ -408,7 +407,6 @@ def view_task():
             "upcoming_tasks": upcoming_tasks,
             "past_tasks": past_tasks
         }
-        print(current_user.username)
         return jsonify({
             "success": True,
             "tasks": task_data
@@ -432,7 +430,6 @@ def edit_task(task_id):
             "start_time": task.start_time,
             "end_time": task.end_time
         }
-        print(current_user.username)
         return ({
             "success": True,
             "task": task_data
