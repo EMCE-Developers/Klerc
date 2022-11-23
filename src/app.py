@@ -156,6 +156,7 @@ def new_category():
 
 
 @app.route('/notes', methods=['POST'])
+@app.route('/notes', methods=['POST'])
 @cross_origin()
 @login_required
 def create_note():
@@ -200,9 +201,9 @@ def get_note(note_id):
 
 
 # get all notes
-@app.route('/notes', methods=['GET'])
-@cross_origin()
-@login_required
+@ app.route('/notes', methods=['GET'])
+@ cross_origin()
+@ login_required
 def get_notes():
 
     # query = db.session.query(User, Note, Category).join(
@@ -241,11 +242,11 @@ def get_notes():
 
 
 # get all notes by category
-@app.route('/notes/<string:category>', methods=['GET'])
-@cross_origin()
-@login_required
+@ app.route('/notes/<string:category>', methods=['GET'])
+@ cross_origin()
+@ login_required
 def get_notes_by_category(category):
-
+    '''
     query = db.session.query(Note, Category, User).join(Note, Category.id == Note.category_id).join(
         User, Note.user_id == User.id).filter(Category.name.like(f"%{category}%")).all()
 
@@ -263,12 +264,34 @@ def get_notes_by_category(category):
         "results": results or "Category does not exist!"
     })
 
+        })
+    '''
+    note_data = []
+    # Get notes filtered by category name for current user
+    notes = Note.query.join(User).filter(User.id == current_user.id).join(Category).filter(
+        Category.id == Note.category_id).filter(Category.name.like(f"%{category}%")).all()
+
+    note_data.extend(
+        {
+            "title": note.title, "content": note.content,
+            "date_created": note.date_created, "id": note.id,
+            "category": note.category_id
+        } for note in notes)
+
+    result = {"notes_data": note_data}
+    return jsonify({
+        "success": True,
+        "notes": result
+    })
 
 # Update a note by id
+
+
 @app.route('/notes/<int:note_id>/edit', methods=['PATCH'])
 @cross_origin()
 @login_required
 def edit_note(note_id):
+
     # body includes the json body or form data field we would like to edit.
     # As of now, I would include id, title, content, creator and category
     '''
@@ -330,7 +353,7 @@ def delete_note(note_id):
         abort(404)
 
 
-@app.route('/tasks/create', methods=['GET', 'POST'])
+@app.route('/tasks', methods=['POST'])
 @cross_origin()
 @login_required
 def create_task():
@@ -370,7 +393,7 @@ def create_task():
         abort(422)
 
 
-@app.route('/tasks', methods=['GET', 'POST'])
+@app.route('/tasks', methods=['GET'])
 @cross_origin()
 @login_required
 def view_task():
