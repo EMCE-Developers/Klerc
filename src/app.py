@@ -255,7 +255,7 @@ def get_notes_by_category(category):
             "notes": result
         })
     except Exception:
-        abort(404)
+        abort(400)
 
 # Update a note by id
 @app.route('/notes/<int:note_id>', methods=['PUT', 'PATCH'])
