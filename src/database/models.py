@@ -34,7 +34,8 @@ class User(db.Model, UserMixin):
     date_created = db.Column(db.String)
     note = db.relationship('Note', backref=db.backref('Note', lazy=True))
     # Added category relationship column
-    category = db.relationship('Category', backref=db.backref('Category', lazy=True))
+    category = db.relationship(
+        'Category', backref=db.backref('Category', lazy=True))
     task = db.relationship('Task', backref=db.backref('Task', lazy=True))
 
     def __repre__(self):
@@ -80,13 +81,17 @@ class Note(db.Model):
         db.session.delete(self)
         db.session.commit()
 
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
+
 
 class Category(db.Model):
     __tablename__ = 'category'
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
-    # Added user_id 
+    # Added user_id
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     note = db.relationship('Note', backref=db.backref('note', lazy=True))
 
@@ -113,7 +118,6 @@ class Task(db.Model):
     #time_period = db.Column(db.String)
     end_time = db.Column(db.String)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-
 
     def __repre__(self):
         return f'<User {self.id} {self.start_time} {self.time_period}>'
