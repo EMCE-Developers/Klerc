@@ -4,6 +4,7 @@ from flask_migrate import Migrate
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from flask_bcrypt import Bcrypt, generate_password_hash, check_password_hash
 from datetime import datetime
+from werkzeug.exceptions import MethodNotAllowed, NotFound, BadRequest, Unauthorized, UnprocessableEntity
 from .database.models import Note, db, Task, Category, User, db_drop_and_create_all, setup_db
 
 app = Flask(__name__)
@@ -16,7 +17,7 @@ login_manager.init_app(app)
 migrate = Migrate(app, db)
 current_time = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 
-#with app.app_context():
+# with app.app_context():
 #   db_drop_and_create_all()
 
 
@@ -36,7 +37,7 @@ def index():
     })
 
 
-@app.route('/register', methods=['GET', 'POST'])
+@app.route('/register', methods=['POST'])
 @cross_origin()
 def register():
     body = request.get_json()
@@ -58,9 +59,13 @@ def register():
             password=generate_password_hash(password, 10),
             date_created=current_time,
         )
-        if user := User.query.filter_by(username=username, email=email).first():
+        if user := User.query.filter_by(username=username).first():
             return ({
-                "message": "User already exist"
+                "message": "Username already exist"
+            })
+        elif user := User.query.filter_by(email=email).first():
+            return ({
+                "message": "Email already exist"
             })
         new_user.insert()
 
@@ -103,53 +108,55 @@ def login():
 @login_required
 def logout():
     logout_user()
-    return({
+    return ({
         "success": True,
         "message": "User logged out"
     })
 
 
 # Made this endpoint to see what is stored in the database
-@app.route('/users', methods=['GET', 'POST'])
+@app.route('/users', methods=['GET'])
 @cross_origin()
 def users():
-    users = User.query.all()
-    formatted_users = [
-        {user.date_created: user.username, "id": user.id} for user in users]
-    
-    return jsonify({
-        "success": True,
-        "users": formatted_users
-    })
+    try:
+        users = User.query.all()
+        formatted_users = [
+            {user.date_created: user.username, "id": user.id} for user in users]
+
+        return jsonify({
+            "success": True,
+            "users": formatted_users
+        })
+    except Exception:
+        abort(401)
 
 
-@app.route('/categories/create', methods=['POST'])
+@app.route('/categories', methods=['POST'])
 @cross_origin()
 @login_required
 def new_category():
 
     body = request.get_json()
     name = body.get('name')
-    categories = Category.query.filter_by(name=name).first()
-
-    if not categories:
-        category = Category(name=name, user_id=current_user.id)
-        category.insert()
-
-        return jsonify({
-            "success": True,
-            "message": f"Category {name} added successfully!"
-        })
-
-    else:
+    if categories := Category.query.filter_by(name=name).first():
         return jsonify({
             "success": False,
             "message": f"Category {name} already exists!"
         })
+    category = Category(name=name, user_id=current_user.id)
+    category.insert()
+
+    return jsonify({
+        "success": True,
+        "message": f"Category {name} added successfully!"
+    })
 
 # create new note  "methods=['POST']"
 # changed the create_note endpoint from '/notes.
-@app.route('/notes/create', methods=['POST'])
+
+
+@app.route('/notes', methods=['POST'])
+@app.route('/notes', methods=['POST'])
 @cross_origin()
 @login_required
 def create_note():
@@ -157,27 +164,25 @@ def create_note():
 
     title = body.get("title")
     content = body.get("content")
-    # The user_id is being removed as current_user.id==user_id
-    #user_id = body.get("user_id")
     category_id = body.get("category_id")
 
-    try:
-        new_note = Note(
-            title=title, content=content, user_id=current_user.id, 
-            category_id=category_id, date_created=current_time,
-        )
+    # check duplicate
+    note = Note.query.filter_by(title=title).first()
+    if note:
+        abort(422)
 
-        new_note.insert()
+    # add the note if previous condition is false
+    new_note = Note(
+        title=title, content=content, user_id=current_user.id,
+        category_id=category_id, date_created=current_time,
+    )
 
-        return jsonify({
-            "success": True
-        })
+    new_note.insert()
 
-    except Exception as e:
-        return jsonify({
-            "success": False,
-            "message": e
-        })
+    return jsonify({
+        "success": True,
+        "message": "New note created!"
+    })
 
 
 @app.route('/notes/<int:note_id>', methods=['GET'])
@@ -186,72 +191,54 @@ def create_note():
 def get_note(note_id):
 
     try:
-        # Join was done here in order to get the user's name
-
-        #query = db.session.query(Note, User).join(
-        #    Note, User.id == Note.user_id).filter(Note.id == id).first()
-
-        #note = query[0]
-        #user = query[1]
-
-        #return jsonify({
-        #    "creator": user.first_name,
-        #    "id": note.id,
-        #    "title": note.title,
-        #    "content": note.content,
-        #    "date_created": note.date_created
-        #})
-
-        if note := Note.query.join(User).filter(User.id==current_user.id).filter(Note.id==note_id).one_or_none():
+        if note := Note.query.join(User).filter(User.id==current_user.id).join(
+            Category).filter(Category.id==Note.category_id).filter(Note.id==note_id).one_or_none():
             return jsonify({
                 "title": note.title,
                 "content": note.content,
                 "date_created": note.date_created,
-                "id": note.id
+                "id": note.id,
+                "category_id": note.category_id
             })
         else:
             abort(404)
     except Exception as e:
-        print(e)
-        return jsonify({
-            "success": False,
-            "message": "Note not found"
-        })
+        abort(400)
 
 
 # get all notes
-@app.route('/notes', methods=['GET'])
-@cross_origin()
-@login_required
+@ app.route('/notes', methods=['GET'])
+@ cross_origin()
+@ login_required
 def get_notes():
 
-    #query = db.session.query(User, Note, Category).join(
+    # query = db.session.query(User, Note, Category).join(
     #    Note, User.id == Note.user_id).join(Category, Note.category_id == Category.id).all()
 
-    #data = [
+    # data = [
     #    {
-    #        "id": data[1].id, "title": data[1].title, "content": data[1].content, 
-    #        "date_created": data[1].date_created, "creator": data[0].first_name, 
+    #        "id": data[1].id, "title": data[1].title, "content": data[1].content,
+    #        "date_created": data[1].date_created, "creator": data[0].first_name,
     #        "category": data[2].name
     #    } for data in query
-    #]
+    # ]
 
-    #return jsonify({
+    # return jsonify({
     #    "success": True,
     #    "notes": data
-    #})
+    # })
     # modified the notes endpoint
     note_data = []
     try:
-        notes = Note.query.join(User).filter(User.id==current_user.id).all()
+        notes = Note.query.join(User).filter(User.id == current_user.id).all()
 
         note_data.extend(
             {
-                "title": note.title, "content": note.content, 
+                "title": note.title, "content": note.content,
                 "date_created": note.date_created, "id": note.id
             } for note in notes)
 
-        result = {"notes_data" : note_data}
+        result = {"notes_data": note_data}
         return jsonify({
             "success": True,
             "notes": result
@@ -261,98 +248,76 @@ def get_notes():
 
 
 # get all notes by category
-@app.route('/notes/<string:category>', methods=['GET'])
-@cross_origin()
-@login_required
+@ app.route('/notes/<string:category>', methods=['GET'])
+@ cross_origin()
+@ login_required
 def get_notes_by_category(category):
 
-    query = db.session.query(Note, Category, User).join(Note, Category.id == Note.category_id).join(
-        User, Note.user_id == User.id).filter(Category.name.like(f"%{category}%")).all()
+    note_data = []
+    # Get notes filtered by category name for current user
+    try:
+        # notes with category names having given characters willbe returned
+        notes = Note.query.join(User).filter(User.id==current_user.id).join(Category).filter(
+        Category.id==Note.category_id).filter(Category.name.like(f"%{category}%")).all()
+    
+        note_data.extend(
+            {
+                "title": note.title, "content": note.content, 
+                "date_created": note.date_created, "id": note.id,
+                "category": note.category_id
+            } for note in notes)
 
-
-    results = [
-        {
-            "note_id": result[0].id, "title": result[0].title, 
-            "content": result[0].content, "date_created": result[0].date_created, 
-            "creator": result[2].first_name
-        } for result in query
-    ]
-
-    return jsonify({
-        "success": len(results) != 0, 
-        "category": category, 
-        "results": results or "Category does not exist!"
+        result = {"notes_data" : note_data}
+        return jsonify({
+            "success": True,
+            "notes": result
         })
-
+    except Exception:
+        abort(400)
 
 # Update a note by id
-@app.route('/notes/<int:note_id>/edit', methods=['PATCH'])
+@app.route('/notes/<int:note_id>', methods=['PUT', 'PATCH'])
 @cross_origin()
 @login_required
 def edit_note(note_id):
+
     # body includes the json body or form data field we would like to edit.
-    # As of now, I would include id, title, content, creator and category
-    '''
-    Query Format
-    {
-    "id": 8,
-    "title": "The 8th note now ",
-    "content": "The content of the 8th note has just being edited and the category is being tested",
-    "creator": "Kashy",
-    "category": "kaokao"
-}
-    '''
     body = request.get_json()
-    categories = Category.query.all()
-    # get note id from the body
-    # Consider changing id to note_id as it is not a good practice to
-    # use built-in variable names and it might confuse other developers
-    note_id = body.get("note_id")
-
     try:
-        result = db.session.query(Note, User, Category).join(Note, User.id == Note.user_id).join(
-            Category, Note.category_id == Category.id).filter(Note.id == note_id).first()
+        note_to_update = Note.query.join(User).filter(User.id==current_user.id).join(Category).filter(
+            Category.id==Note.category_id).filter(Note.id==note_id).one_or_none()
 
-        (note, user, category) = result
-        category_name = body.get("category")
+        note_to_update.title = body.get("title")
+        note_to_update.content = body.get("content")
+        note_to_update.category_id = body.get("category_id")
 
-        note.title = body.get("title")
-        note.content = body.get("content")
-        user.first_name = body.get("creator")
-
-        # the category should not modify except if the name already exists
-        for cat in categories:
-            category.name = category.name if category_name != cat.name else category_name
-        db.session.commit()
-
-        return jsonify({
+        note_to_update.update()
+        return ({
             "success": True,
-            "message": "Contents edited, successfully!"
+            "message": "Note updated successfully"
         })
+    except Exception:
+        abort(400)
 
-    except Exception as e:
-        print(e)
-        return jsonify({
-            "success": False,
-            "message": f"Note with id {id} was not found!"
-        })
 
-@app.route('/notes/<int:note_id>/delete', methods=['DELETE'])
+@app.route('/notes/<int:note_id>', methods=['DELETE'])
 @cross_origin()
 @login_required
 def delete_note(note_id):
 
     try:
-        note = Note.query.filter(Note.id == note_id).one_or_none()
-
-        note.delete()
-
-        return {"success": True, "message": f"{str(note.title)} deleted successfully"}
+        note= Note.query.join(User).filter(User.id==current_user.id).filter(
+            Note.id == note_id).one_or_none()
+        if note is None:
+            abort(404)
+        else:
+            note.delete()
+            return {"success": True, "message": f"{str(note.title)} deleted successfully"}
     except Exception:
         abort(400)
 
 
-@app.route('/tasks/create', methods=['GET', 'POST'])
+@app.route('/tasks', methods=['POST'])
 @cross_origin()
 @login_required
 def create_task():
@@ -389,18 +354,18 @@ def create_task():
             "message": "Task created successfully"
         })
     except Exception:
-        abort(422)
+        abort(400)
 
 
-@app.route('/tasks', methods=['GET', 'POST'])
+@app.route('/tasks', methods=['GET'])
 @cross_origin()
 @login_required
-def view_task():
+def get_tasks():
     tasks = Task.query.join(User).filter(User.id==int(current_user.id)).all()
     past_tasks = []
     upcoming_tasks = []
     current_tasks = []
-    
+
     try:
         for task in tasks:
 
@@ -440,16 +405,17 @@ def view_task():
             "tasks": task_data
         })
     except Exception:
-        abort(404)
+        abort(400)
 
 
-@app.route('/tasks/<int:task_id>/edit', methods=['GET'])
+@app.route('/tasks/<int:task_id>', methods=['GET'])
 @cross_origin()
 @login_required
-def edit_task(task_id):
+def get_task(task_id):
 
     try:
-        task = Task.query.join(User).filter(User.id==current_user.id).filter(Task.id == task_id).one_or_none()
+        task = Task.query.join(User).filter(User.id == current_user.id).filter(
+            Task.id == task_id).one_or_none()
 
         task_data = {
             "id": task.id,
@@ -466,15 +432,16 @@ def edit_task(task_id):
         abort(400)
 
 
-@app.route('/tasks/<int:task_id>/edit', methods=['POST', 'PATCH'])
+@app.route('/tasks/<int:task_id>', methods=['PUT', 'PATCH'])
 @cross_origin()
 @login_required
-def edit_task_submission(task_id):
+def edit_task(task_id):
 
     body = request.get_json()
 
     try:
-        task_to_update = Task.query.join(User).filter(User.id==current_user.id).filter(Task.id == task_id).one_or_none()
+        task_to_update = Task.query.join(User).filter(
+            User.id == current_user.id).filter(Task.id == task_id).one_or_none()
 
         task_to_update.title = body.get("title")
         task_to_update.content = body.get("description")
@@ -491,17 +458,18 @@ def edit_task_submission(task_id):
         abort(400)
 
 
-@app.route('/tasks/<int:task_id>/delete', methods=['DELETE'])
+@app.route('/tasks/<int:task_id>', methods=['DELETE'])
 @cross_origin()
 @login_required
 def delete_task(task_id):
 
     try:
         task = Task.query.join(User).filter(User.id==current_user.id).filter(Task.id == task_id).one_or_none()
-
-        task.delete()
-
-        return {"success": True, "message": f"{str(task.title)} deleted successfully"}
+        if task is None:
+            abort(404)
+        else:
+            task.delete()
+            return {"success": True, "message": f"{str(task.title)} deleted successfully"}
     except Exception:
         abort(400)
 
@@ -515,6 +483,7 @@ def bad_request(error):
         "message": "Bad Request"
     }), 400
 
+
 @app.errorhandler(401)
 @cross_origin()
 def unprocessable(error):
@@ -524,6 +493,7 @@ def unprocessable(error):
         "message": "Unauthorized"
     }), 401
 
+
 @app.errorhandler(404)
 @cross_origin()
 def not_found(error):
@@ -532,6 +502,15 @@ def not_found(error):
         "error": 404,
         "message": "Resource Not Found"
     }), 404
+
+@app.errorhandler(405)
+@cross_origin()
+def method_not_allowed(error):
+    return jsonify({
+        "success": False,
+        "error": 405,
+        "message": "Method Not Allowed"
+    }), 405
 
 @app.errorhandler(422)
 @cross_origin()
