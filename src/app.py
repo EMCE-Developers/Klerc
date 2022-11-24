@@ -4,7 +4,6 @@ from flask_migrate import Migrate
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from flask_bcrypt import Bcrypt, generate_password_hash, check_password_hash
 from datetime import datetime
-from werkzeug.exceptions import MethodNotAllowed, NotFound, BadRequest, Unauthorized, UnprocessableEntity
 from .database.models import Note, db, Task, Category, User, db_drop_and_create_all, setup_db
 
 app = Flask(__name__)
@@ -40,8 +39,17 @@ def index():
 @app.route('/register', methods=['POST'])
 @cross_origin()
 def register():
+    '''
+    Used to register a new account, expected input should come in this format
+    {
+        "first_name": "Eiyzy",
+        "last_name": "Eusy",
+        "email": "test005@test.com",
+        "username": "Bee5",
+        "password": "test5"
+    }
+    '''
     body = request.get_json()
-
     # # Get user info
     first_name = body.get("first_name")
     last_name = body.get("last_name")
@@ -60,25 +68,30 @@ def register():
             date_created=current_time,
         )
         if user := User.query.filter_by(username=username).first():
-            return ({
+            return jsonify({
                 "message": "Username already exist"
             })
         elif user := User.query.filter_by(email=email).first():
-            return ({
+            return jsonify({
                 "message": "Email already exist"
             })
         new_user.insert()
 
-        return jsonify({
-            "success": True
-        })
+        return jsonify({"success": True, "message": f"{username} created"})
     except Exception:
-        abort(422)
+        abort(400)
 
 
 @app.route('/login', methods=['GET', 'POST'])
 @cross_origin()
 def login():
+    '''
+    Used to login user, expected input should come in this the format
+    {
+    "username": "Bee5",
+    "password": "test5"
+    }
+    '''
     body = request.get_json()
     # Get user login details
     username = body.get("username")
@@ -100,13 +113,14 @@ def login():
             "message": "Login successful"
         })
     except Exception:
-        abort(422)
+        abort(400)
 
 
 @app.route('/logout', methods=['GET', 'POST'])
 @cross_origin()
 @login_required
 def logout():
+    '''Function to log a user out'''
     logout_user()
     return ({
         "success": True,
@@ -115,29 +129,36 @@ def logout():
 
 
 # Made this endpoint to see what is stored in the database
-@app.route('/users', methods=['GET'])
-@cross_origin()
-def users():
-    try:
-        users = User.query.all()
-        formatted_users = [
-            {user.date_created: user.username, "id": user.id} for user in users]
-
-        return jsonify({
-            "success": True,
-            "users": formatted_users
-        })
-    except Exception:
-        abort(401)
+# @app.route('/users', methods=['GET'])
+# @cross_origin()
+# @login_required
+# def users():
+#     try:
+#         users = User.query.all()
+#         formatted_users = [
+#             {user.date_created: user.username, "id": user.id} for user in users]
+# 
+#         return jsonify({
+#             "success": True,
+#             "users": formatted_users
+#         })
+#     except Exception:
+#         abort(401)
 
 
 @app.route('/categories', methods=['POST'])
 @cross_origin()
 @login_required
 def new_category():
-
+    '''
+    Function to add new category, expected input should come in this format,
+    {
+    "name": "Category 1"
+    }
+    '''
     body = request.get_json()
-    name = body.get('name')
+    new_name = body.get('name')
+    name = new_name.lower()
     if categories := Category.query.filter_by(name=name).first():
         return jsonify({
             "success": False,
@@ -153,46 +174,58 @@ def new_category():
 
 # create new note  "methods=['POST']"
 # changed the create_note endpoint from '/notes.
-
-
-@app.route('/notes', methods=['POST'])
 @app.route('/notes', methods=['POST'])
 @cross_origin()
 @login_required
 def create_note():
+    '''
+    Function to create notes, expected input should come in this format
+    {
+    "title": "Note 1",
+    "content": "Here goes your notes",
+    "category_id": 1
+    }
+    '''
     body = request.get_json()
-
     title = body.get("title")
     content = body.get("content")
     category_id = body.get("category_id")
 
-    # check duplicate
-    note = Note.query.filter_by(title=title).first()
-    if note:
-        abort(422)
+    try:
+        title = body.get("title")
+        content = body.get("content")
+        category_id = body.get("category_id")
 
-    # add the note if previous condition is false
-    new_note = Note(
-        title=title, content=content, user_id=current_user.id,
-        category_id=category_id, date_created=current_time,
-    )
+        # add the note if previous condition is false
+        new_note = Note(
+            title=title, content=content, user_id=current_user.id,
+            category_id=category_id, date_created=current_time,
+        )
+        if title is None:
+            return ({
+                "success": False,
+                "message": "Please enter Note title"
+            })
+        new_note.insert()
 
-    new_note.insert()
-
-    return jsonify({
-        "success": True,
-        "message": "New note created!"
-    })
+        return jsonify({
+            "success": True,
+            "message": f"{title} created!"
+        })
+    except Exception:
+        abort(400)
 
 
 @app.route('/notes/<int:note_id>', methods=['GET'])
 @cross_origin()
 @login_required
 def get_note(note_id):
-
+    '''Function to get a specific note using the id'''
     try:
-        if note := Note.query.join(User).filter(User.id==current_user.id).join(
-            Category).filter(Category.id==Note.category_id).filter(Note.id==note_id).one_or_none():
+        if note := Note.query.join(User).filter(User.id==current_user.id).join(Category).filter(
+            Category.id==Note.category_id).filter(Note.id==note_id).one_or_none():
+        #if note := Note.query.join(User).filter(
+         #   User.id==current_user.id).filter(Note.id==note_id).one_or_none():
             return jsonify({
                 "title": note.title,
                 "content": note.content,
@@ -202,7 +235,7 @@ def get_note(note_id):
             })
         else:
             abort(404)
-    except Exception as e:
+    except Exception:
         abort(400)
 
 
@@ -211,31 +244,16 @@ def get_note(note_id):
 @ cross_origin()
 @ login_required
 def get_notes():
-
-    # query = db.session.query(User, Note, Category).join(
-    #    Note, User.id == Note.user_id).join(Category, Note.category_id == Category.id).all()
-
-    # data = [
-    #    {
-    #        "id": data[1].id, "title": data[1].title, "content": data[1].content,
-    #        "date_created": data[1].date_created, "creator": data[0].first_name,
-    #        "category": data[2].name
-    #    } for data in query
-    # ]
-
-    # return jsonify({
-    #    "success": True,
-    #    "notes": data
-    # })
-    # modified the notes endpoint
+    '''Function to view notes'''
     note_data = []
     try:
-        notes = Note.query.join(User).filter(User.id == current_user.id).all()
+        notes = Note.query.join(User).filter(User.id==current_user.id).all()
 
         note_data.extend(
             {
                 "title": note.title, "content": note.content,
-                "date_created": note.date_created, "id": note.id
+                "date_created": note.date_created, "id": note.id,
+                "category_id": note.category_id
             } for note in notes)
 
         result = {"notes_data": note_data}
@@ -248,15 +266,20 @@ def get_notes():
 
 
 # get all notes by category
-@ app.route('/notes/<string:category>', methods=['GET'])
+@ app.route('/notes/category/<string:category>', methods=['GET'])
 @ cross_origin()
 @ login_required
 def get_notes_by_category(category):
+    '''
+    Function to get notes by category name, searches with given characters
+    to return notes with category names having same characters
+    expected input should come in the format
 
-    note_data = []
-    # Get notes filtered by category name for current user
+    '''
+    note_data=[]
     try:
-        # notes with category names having given characters willbe returned
+        # Get notes filtered by category name for current user
+        # notes with category names having given characters will be returned
         notes = Note.query.join(User).filter(User.id==current_user.id).join(Category).filter(
         Category.id==Note.category_id).filter(Category.name.like(f"%{category}%")).all()
     
@@ -338,20 +361,25 @@ def create_task():
         )
 
         if title is None:
-            return ({
+            return jsonify({
                 "success": False,
                 "message": "Please enter Task title"
             })
 
         if start_time is None and end_time is None:
-            return ({
+            return jsonify({
                 "success": False,
                 "message": "Please enter valid start time and time period for task"
+            })
+        if start_time > end_time:
+            return jsonify({
+                "success": False,
+                "message": "Task finish time should be greater than start time"
             })
         task.insert()
         return ({
             'success': True,
-            "message": "Task created successfully"
+            "message": f"{title} created successfully"
         })
     except Exception:
         abort(400)
@@ -360,7 +388,7 @@ def create_task():
 @app.route('/tasks', methods=['GET'])
 @cross_origin()
 @login_required
-def get_tasks():
+def view_task():
     tasks = Task.query.join(User).filter(User.id==int(current_user.id)).all()
     past_tasks = []
     upcoming_tasks = []
@@ -492,7 +520,6 @@ def unprocessable(error):
         "error": 401,
         "message": "Unauthorized"
     }), 401
-
 
 @app.errorhandler(404)
 @cross_origin()
