@@ -246,31 +246,13 @@ def get_notes():
 @ cross_origin()
 @ login_required
 def get_notes_by_category(category):
-    '''
-    query = db.session.query(Note, Category, User).join(Note, Category.id == Note.category_id).join(
-        User, Note.user_id == User.id).filter(Category.name.like(f"%{category}%")).all()
 
-    results = [
-        {
-            "note_id": result[0].id, "title": result[0].title,
-            "content": result[0].content, "date_created": result[0].date_created,
-            "creator": result[2].first_name
-        } for result in query
-    ]
-
-    return jsonify({
-        "success": len(results) != 0,
-        "category": category,
-        "results": results or "Category does not exist!"
-    })
-
-        })
-    '''
     note_data = []
     # Get notes filtered by category name for current user
     notes = Note.query.join(User).filter(User.id == current_user.id).join(Category).filter(
         Category.id == Note.category_id).filter(Category.name.like(f"%{category}%")).all()
-
+    cat = [cat.name for cat in Category.query.all()]
+    print(cat)
     note_data.extend(
         {
             "title": note.title, "content": note.content,
@@ -292,23 +274,10 @@ def get_notes_by_category(category):
 @login_required
 def edit_note(note_id):
 
-    # body includes the json body or form data field we would like to edit.
-    # As of now, I would include id, title, content, creator and category
-    '''
-    Query Format
-    {
-    "id": 8,
-    "title": "The 8th note now ",
-    "content": "The content of the 8th note has just being edited and the category is being tested",
-    "creator": "Kashy",
-    "category": "kaokao"
-}
-    '''
     body = request.get_json()
     categories = Category.query.all()
     # get note id from the body
-    # Consider changing id to note_id as it is not a good practice to
-    # use built-in variable names and it might confuse other developers
+
     note_id = body.get("note_id")
 
     try:
