@@ -193,15 +193,22 @@ def create_note():
     content = body.get("content")
     category_id = body.get("category_id")
 
+    note_title = User.query.join(Note).filter(
+        User.id == current_user.id).filter(Note.user_id == current_user.id).filter_by(title=title).first()
+
     try:
-        title = body.get("title")
-        content = body.get("content")
-        category_id = body.get("category_id")
+        # handled duplicate title cases and invalid category_id
+        if note_title:
+            return ({
+                "success": False,
+                "message": "Note title already exist"
+            })
 
         # add the note if previous condition is false
         new_note = Note(
             title=title, content=content, user_id=current_user.id,
             category_id=category_id, date_created=current_time,
+
         )
         if title is None:
             return ({
@@ -229,11 +236,12 @@ def get_note(note_id):
             # if note := Note.query.join(User).filter(
          #   User.id==current_user.id).filter(Note.id==note_id).one_or_none():
             return jsonify({
-                "title": note.title,
-                "content": note.content,
-                "date_created": note.date_created,
-                "id": note.id,
-                "category_id": note.category_id
+                "message": "Retrieved Successfully",
+                "note": {"title": note.title,
+                         "content": note.content,
+                         "date_created": note.date_created,
+                         "id": note.id,
+                         "category_id": note.category_id}
             })
         else:
             abort(404)
@@ -310,6 +318,7 @@ def edit_note(note_id):
 
     # body includes the json body or form data field we would like to edit.
     body = request.get_json()
+
     try:
         note_to_update = Note.query.join(User).filter(User.id == current_user.id).join(Category).filter(
             Category.id == Note.category_id).filter(Note.id == note_id).one_or_none()
@@ -324,7 +333,7 @@ def edit_note(note_id):
             "message": "Note updated successfully"
         })
     except Exception:
-        abort(400)
+        abort(422)
 
 
 @app.route('/notes/<int:note_id>', methods=['DELETE'])
@@ -341,7 +350,7 @@ def delete_note(note_id):
             note.delete()
             return {"success": True, "message": f"{str(note.title)} deleted successfully"}
     except Exception:
-        abort(400)
+        abort(404)
 
 
 @app.route('/tasks', methods=['POST'])
@@ -504,6 +513,26 @@ def delete_task(task_id):
             task.delete()
             return {"success": True, "message": f"{str(task.title)} deleted successfully"}
     except Exception:
+        abort(400)
+
+
+@app.route('/search', methods=['POST'])
+@login_required
+@cross_origin()
+def search_task_notes():
+    body = request.get_json()
+    keyword = body.get("query")
+    try:
+        tasks = [{"title": task.title, "content": task.content} for task in Task.query.join(User).filter(
+            User.id == int(current_user.id)).filter(Task.title.like("%"+keyword+"%")).all()]
+        notes = [{"title": note.title, "content": note.content} for note in Note.query.join(User).filter(User.id == current_user.id).filter(
+            Note.title.like("%"+keyword+"%")).all()]
+
+        return ({
+            "success": True,
+            "result": {"tasks": tasks, "notes": notes},
+        })
+    except:
         abort(400)
 
 
