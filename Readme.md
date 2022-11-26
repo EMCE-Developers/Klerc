@@ -53,8 +53,8 @@ Here are some status codes;
 
 
 ### Authors
-Celestine Okonkwo
-Monsur Oyedeji
+- Celestine Okonkwo
+- Monsur Oyedeji
 
 
 ### Acknowledgment
