@@ -126,11 +126,14 @@ def login():
 @login_required
 def logout():
     '''Function to log a user out'''
-    logout_user()
-    return ({
-        "success": True,
-        "message": "User logged out"
-    })
+    try:
+        logout_user()
+        return ({
+            "success": True,
+            "message": "User logged out"
+        })
+    except Exception:
+        abort(400)
 
 
 # Made this endpoint to see what is stored in the database
