@@ -4,7 +4,10 @@ from flask_migrate import Migrate
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from flask_bcrypt import Bcrypt, generate_password_hash, check_password_hash
 from datetime import datetime
+import logging
 from .database.models import Note, db, Task, Category, User, db_drop_and_create_all, setup_db
+
+logging.basicConfig(filename='app.log', filemode='w', format='%(message)s', datefmt='%d-%b-%y %H:%M:%S')
 
 app = Flask(__name__)
 setup_db(app)
@@ -79,6 +82,7 @@ def register():
 
         return jsonify({"success": True, "message": f"{username} created"})
     except Exception:
+        logging.exception("message")
         abort(400)
 
 
@@ -113,6 +117,7 @@ def login():
             "message": "Login successful"
         })
     except Exception:
+        logging.exception("message")
         abort(400)
 
 
@@ -137,7 +142,7 @@ def logout():
 #         users = User.query.all()
 #         formatted_users = [
 #             {user.date_created: user.username, "id": user.id} for user in users]
-#
+# 
 #         return jsonify({
 #             "success": True,
 #             "users": formatted_users
@@ -174,8 +179,6 @@ def new_category():
 
 # create new note  "methods=['POST']"
 # changed the create_note endpoint from '/notes.
-
-
 @app.route('/notes', methods=['POST'])
 @cross_origin()
 @login_required
@@ -193,22 +196,15 @@ def create_note():
     content = body.get("content")
     category_id = body.get("category_id")
 
-    note_title = User.query.join(Note).filter(
-        User.id == current_user.id).filter(Note.user_id == current_user.id).filter_by(title=title).first()
-
     try:
-        # handled duplicate title cases and invalid category_id
-        if note_title:
-            return ({
-                "success": False,
-                "message": "Note title already exist"
-            })
+        title = body.get("title")
+        content = body.get("content")
+        category_id = body.get("category_id")
 
         # add the note if previous condition is false
         new_note = Note(
             title=title, content=content, user_id=current_user.id,
             category_id=category_id, date_created=current_time,
-
         )
         if title is None:
             return ({
@@ -229,19 +225,21 @@ def create_note():
 @cross_origin()
 @login_required
 def get_note(note_id):
-    '''Function to get a specific note using the id'''
+    '''
+        Function to get a specific note using the id
+        expected output will appear like 
+    '''
     try:
-        if note := Note.query.join(User).filter(User.id == current_user.id).join(Category).filter(
-                Category.id == Note.category_id).filter(Note.id == note_id).one_or_none():
-            # if note := Note.query.join(User).filter(
+        if note := Note.query.join(User).filter(User.id==current_user.id).join(Category).filter(
+            Category.id==Note.category_id).filter(Note.id==note_id).one_or_none():
+        #if note := Note.query.join(User).filter(
          #   User.id==current_user.id).filter(Note.id==note_id).one_or_none():
             return jsonify({
-                "message": "Retrieved Successfully",
-                "note": {"title": note.title,
-                         "content": note.content,
-                         "date_created": note.date_created,
-                         "id": note.id,
-                         "category_id": note.category_id}
+                "title": note.title,
+                "content": note.content,
+                "date_created": note.date_created,
+                "id": note.id,
+                "category_id": note.category_id
             })
         else:
             abort(404)
@@ -257,7 +255,7 @@ def get_notes():
     '''Function to view notes'''
     note_data = []
     try:
-        notes = Note.query.join(User).filter(User.id == current_user.id).all()
+        notes = Note.query.join(User).filter(User.id==current_user.id).all()
 
         note_data.extend(
             {
@@ -282,25 +280,24 @@ def get_notes():
 def get_notes_by_category(category):
     '''
     Function to get notes by category name, searches with given characters
-    to return notes with category names having same characters
-    expected input should come in the format
+    to return notes with category names having those characters.
 
     '''
-    note_data = []
+    note_data=[]
     try:
         # Get notes filtered by category name for current user
         # notes with category names having given characters will be returned
-        notes = Note.query.join(User).filter(User.id == current_user.id).join(Category).filter(
-            Category.id == Note.category_id).filter(Category.name.like(f"%{category}%")).all()
-
+        notes = Note.query.join(User).filter(User.id==current_user.id).join(Category).filter(
+        Category.id==Note.category_id).filter(Category.name.like(f"%{category}%")).all()
+    
         note_data.extend(
             {
-                "title": note.title, "content": note.content,
+                "title": note.title, "content": note.content, 
                 "date_created": note.date_created, "id": note.id,
                 "category": note.category_id
             } for note in notes)
 
-        result = {"notes_data": note_data}
+        result = {"notes_data" : note_data}
         return jsonify({
             "success": True,
             "notes": result
@@ -309,19 +306,16 @@ def get_notes_by_category(category):
         abort(400)
 
 # Update a note by id
-
-
 @app.route('/notes/<int:note_id>', methods=['PUT', 'PATCH'])
 @cross_origin()
 @login_required
 def edit_note(note_id):
-
+    ''''''
     # body includes the json body or form data field we would like to edit.
     body = request.get_json()
-
     try:
-        note_to_update = Note.query.join(User).filter(User.id == current_user.id).join(Category).filter(
-            Category.id == Note.category_id).filter(Note.id == note_id).one_or_none()
+        note_to_update = Note.query.join(User).filter(User.id==current_user.id).join(Category).filter(
+            Category.id==Note.category_id).filter(Note.id==note_id).one_or_none()
 
         note_to_update.title = body.get("title")
         note_to_update.content = body.get("content")
@@ -333,7 +327,7 @@ def edit_note(note_id):
             "message": "Note updated successfully"
         })
     except Exception:
-        abort(422)
+        abort(400)
 
 
 @app.route('/notes/<int:note_id>', methods=['DELETE'])
@@ -342,7 +336,7 @@ def edit_note(note_id):
 def delete_note(note_id):
 
     try:
-        note = Note.query.join(User).filter(User.id == current_user.id).filter(
+        note= Note.query.join(User).filter(User.id==current_user.id).filter(
             Note.id == note_id).one_or_none()
         if note is None:
             abort(404)
@@ -350,7 +344,7 @@ def delete_note(note_id):
             note.delete()
             return {"success": True, "message": f"{str(note.title)} deleted successfully"}
     except Exception:
-        abort(404)
+        abort(400)
 
 
 @app.route('/tasks', methods=['POST'])
@@ -402,7 +396,7 @@ def create_task():
 @cross_origin()
 @login_required
 def view_task():
-    tasks = Task.query.join(User).filter(User.id == int(current_user.id)).all()
+    tasks = Task.query.join(User).filter(User.id==int(current_user.id)).all()
     past_tasks = []
     upcoming_tasks = []
     current_tasks = []
@@ -505,34 +499,13 @@ def edit_task(task_id):
 def delete_task(task_id):
 
     try:
-        task = Task.query.join(User).filter(User.id == current_user.id).filter(
-            Task.id == task_id).one_or_none()
+        task = Task.query.join(User).filter(User.id==current_user.id).filter(Task.id == task_id).one_or_none()
         if task is None:
             abort(404)
         else:
             task.delete()
             return {"success": True, "message": f"{str(task.title)} deleted successfully"}
     except Exception:
-        abort(400)
-
-
-@app.route('/search', methods=['POST'])
-@login_required
-@cross_origin()
-def search_task_notes():
-    body = request.get_json()
-    keyword = body.get("query")
-    try:
-        tasks = [{"title": task.title, "content": task.content} for task in Task.query.join(User).filter(
-            User.id == int(current_user.id)).filter(Task.title.like("%"+keyword+"%")).all()]
-        notes = [{"title": note.title, "content": note.content} for note in Note.query.join(User).filter(User.id == current_user.id).filter(
-            Note.title.like("%"+keyword+"%")).all()]
-
-        return ({
-            "success": True,
-            "result": {"tasks": tasks, "notes": notes},
-        })
-    except:
         abort(400)
 
 
@@ -555,7 +528,6 @@ def unprocessable(error):
         "message": "Unauthorized"
     }), 401
 
-
 @app.errorhandler(404)
 @cross_origin()
 def not_found(error):
@@ -565,7 +537,6 @@ def not_found(error):
         "message": "Resource Not Found"
     }), 404
 
-
 @app.errorhandler(405)
 @cross_origin()
 def method_not_allowed(error):
@@ -574,7 +545,6 @@ def method_not_allowed(error):
         "error": 405,
         "message": "Method Not Allowed"
     }), 405
-
 
 @app.errorhandler(422)
 @cross_origin()
