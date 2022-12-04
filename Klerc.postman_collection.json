@@ -1,0 +1,613 @@
+{
+	"info": {
+		"_postman_id": "376331f4-b349-4a78-8397-a04504ccb955",
+		"name": "Klerc",
+		"description": "thing learnt in bootcamp",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Get Notes by Category name",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"status code\", ()=> pm.response.to.have.status(200))",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/notes/category/Sport",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"notes",
+						"category",
+						"Sport"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Klerc-Register",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", ()=> {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"first_name\": \"Giyzy\",\r\n    \"last_name\": \"Gusy\",\r\n    \"email\": \"lara@gmail.com\",\r\n    \"username\": \"lara\",\r\n    \"password\": \"lara\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/register",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Klerc-Login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", ()=> {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Login Result\", ()=> {\r",
+							"    let data = pm.response.json()\r",
+							"    pm.expect(data.message).to.include(\"Login successful\")\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": " {\r\n    \"username\": \"lara\",\r\n    \"password\": \"lara\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/login",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Task",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", ()=> {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"title\": \"Tasks and Notes crud\",\r\n    \"description\": \"Just another Lorem, This is to test current_user can be added to user id\",\r\n    \"start_time\": \"24/11/2022 8:30:00\",\r\n    \"end_time\": \"24/11/2022 9:40:00\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/tasks",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"tasks"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "View Tasks",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", ()=> {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"view tasks\", ()=> {\r",
+							"    let data = pm.response.json()\r",
+							"    pm.expect(data.tasks.upcoming_tasks.length || data.tasks.past_tasks.length || data.tasks.current_tasks.length).to.greaterThan(0)\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/tasks",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"tasks"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "View Specific Task",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"status code\", ()=> pm.response.to.have.status(200))\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/tasks/13",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"tasks",
+						"13"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Edit task",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"status\", ()=> pm.response.to.have.status(200))\r",
+							"\r",
+							"pm.test(\"update tasks\", ()=>{\r",
+							"    let data = pm.response.json()\r",
+							"    pm.expect(data.message).to.eql(\"Task updated successfully\")\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"title\": \"To be updated tawwwwa\",\r\n    \"description\": \"Just another Lorem, This is to test current_user can be added to user id\",\r\n    \"start_time\": \"24/11/2022 8:30:00\",\r\n    \"end_time\": \"24/11/2022 9:40:00\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/tasks/13",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"tasks",
+						"13"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Task",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"status\", ()=> pm.response.to.have.status(200))\r",
+							"\r",
+							"pm.test(\"delete task\", ()=>{\r",
+							"    let data = pm.response.json()\r",
+							"    pm.expect(data.message).to.include(\"successfully\")\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/tasks/13",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"tasks",
+						"13"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create note",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", ()=> {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"created new note\", ()=> {\r",
+							"    data = pm.response.json()\r",
+							"    pm.expect(data.message).to.include(\"created\")\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "    {\r\n    \"title\": \"Tasks and Notes by Larawwappp\",\r\n    \"content\": \"Here goes your notes\",\r\n    \"category_id\": 3\r\n    }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/notes",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"notes"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Category",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('create category', ()=> {\r",
+							"    pm.response.to.have.status(200)\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "    {\r\n    \"name\": \"Boyz\"\r\n    }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/categories",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"categories"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "View specific note",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"status code\", ()=> pm.response.to.have.status(200))\r",
+							"pm.test(\"message check\", ()=> {\r",
+							"    data = pm.response.json()\r",
+							"    pm.expect(data.message).to.include(\"Successfully\")\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/notes/14",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"notes",
+						"14"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "View Notes",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", ()=> {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"notes length\", ()=> {\r",
+							"    let data = pm.response.json()\r",
+							"    pm.expect(data.notes.notes_data.length).to.be.greaterThan(0)\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/notes",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"notes"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Note",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", ()=> {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/notes/14",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"notes",
+						"14"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Edit Notes",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", ()=> {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"title\": \"This has been edit\",\r\n    \"content\": \"An edited note for all!\",\r\n    \"category_id\": 3\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/notes/14",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"notes",
+						"14"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Klerc-Search",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", ()=> pm.response.to.have.status(200))\r",
+							"\r",
+							"pm.test(\"response time\", ()=> pm.expect(pm.response.responseTime).to.be.below(200))"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"query\": \"Task\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/search",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"search"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Logout",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", ()=> pm.response.to.have.status(200))\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/logout",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"logout"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
