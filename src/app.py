@@ -7,7 +7,6 @@ from datetime import datetime
 import logging
 from .database.models import Note, db, Task, Category, User, db_drop_and_create_all, setup_db
 
-logging.basicConfig(filename='app.log', filemode='w', format='%(message)s', datefmt='%d-%b-%y %H:%M:%S')
 
 app = Flask(__name__)
 setup_db(app)
@@ -18,6 +17,7 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 migrate = Migrate(app, db)
 current_time = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+logging.basicConfig(filename='app.log', filemode='a', format='%(levelname)s in %(module)s: %(message)s', datefmt='%d-%b-%y %H:%M:%S')
 
 # with app.app_context():
 #   db_drop_and_create_all()
@@ -43,7 +43,7 @@ def index():
 @cross_origin()
 def register():
     '''
-    Used to register a new account, expected input should come in this format
+    Used to register a new account, expected input should come in this format \n
     {
         "first_name": "Eiyzy",
         "last_name": "Eusy",
@@ -90,7 +90,7 @@ def register():
 @cross_origin()
 def login():
     '''
-    Used to login user, expected input should come in this the format
+    Used to login user, expected input should come in this the format \n
     {
     "username": "Bee5",
     "password": "test5"
@@ -159,7 +159,7 @@ def logout():
 @login_required
 def new_category():
     '''
-    Function to add new category, expected input should come in this format,
+    Function to add new category, expected input should come in this format, \n
     {
     "name": "Category 1"
     }
@@ -187,7 +187,7 @@ def new_category():
 @login_required
 def create_note():
     '''
-    Function to create notes, expected input should come in this format
+    Function to create notes, expected input should come in this format \n
     {
     "title": "Note 1",
     "content": "Here goes your notes",
@@ -230,7 +230,14 @@ def create_note():
 def get_note(note_id):
     '''
         Function to get a specific note using the id
-        expected output will appear like 
+        expected response will look similar to this \n
+        {
+            "category_id": 3,
+            "content": "Here goes your notes",
+            "date_created": "25/11/2022 09:52:52",
+            "id": 15,
+            "title": "Tasks and Notes"
+        }
     '''
     try:
         if note := Note.query.join(User).filter(User.id==current_user.id).join(Category).filter(
@@ -255,7 +262,26 @@ def get_note(note_id):
 @ cross_origin()
 @ login_required
 def get_notes():
-    '''Function to view notes'''
+    '''Function to view notes, expected response should return notes authorized by user eg \n
+        {
+            "notes": [
+                {
+                    "category_id": 2,
+                    "content": "An edited note for all!",
+                    "date_created": "25/11/2022 09:52:13",
+                    "id": 11,
+                    "title": "This has been edited"
+                },
+                {
+                    "category_id": 3,
+                    "content": "Here goes your notes",
+                    "date_created": "25/11/2022 09:52:52",
+                    "id": 15,
+                    "title": "Tasks and Notes by Larawwaaaaaa"
+                },
+            ]
+        }
+    '''
     note_data = []
     try:
         notes = Note.query.join(User).filter(User.id==current_user.id).all()
@@ -267,7 +293,7 @@ def get_notes():
                 "category_id": note.category_id
             } for note in notes)
 
-        result = {"notes_data": note_data}
+        result = note_data
         return jsonify({
             "success": True,
             "notes": result
@@ -282,9 +308,27 @@ def get_notes():
 @ login_required
 def get_notes_by_category(category):
     '''
-    Function to get notes by category name, searches with given characters
-    to return notes with category names having those characters.
-
+        Function to get notes by category name, searches with given \n
+        characters to return notes with category names having those characters. 
+        Example of expected response \n
+        {
+            "notes": [
+                {
+                    "category_id": 1,
+                    "content": "Here goes your notes",
+                    "date_created": "25/11/2022 09:52:13",
+                    "id": 10,
+                    "title": "Tasks and Notes Kasumu"
+                },
+                {
+                    "category_id": 2,
+                    "content": "An edited note for all!",
+                    "date_created": "25/11/2022 09:52:13",
+                    "id": 11,
+                    "title": "This has been edited"
+                },
+            ]
+        }
     '''
     note_data=[]
     try:
@@ -300,7 +344,7 @@ def get_notes_by_category(category):
                 "category": note.category_id
             } for note in notes)
 
-        result = {"notes_data" : note_data}
+        result = note_data
         return jsonify({
             "success": True,
             "notes": result
@@ -313,7 +357,14 @@ def get_notes_by_category(category):
 @cross_origin()
 @login_required
 def edit_note(note_id):
-    ''''''
+    '''
+        Function to edit existing note, example of expected input; \n
+        {
+            "title": "This has been edit",
+            "content": "An edited note for all!",
+            "category_id": 3
+        }
+    '''
     # body includes the json body or form data field we would like to edit.
     body = request.get_json()
     try:
@@ -337,7 +388,9 @@ def edit_note(note_id):
 @cross_origin()
 @login_required
 def delete_note(note_id):
-
+    '''
+        Function to delete note
+    '''
     try:
         note= Note.query.join(User).filter(User.id==current_user.id).filter(
             Note.id == note_id).one_or_none()
@@ -354,6 +407,15 @@ def delete_note(note_id):
 @cross_origin()
 @login_required
 def create_task():
+    '''
+        Function to create task, expected input; \n
+        {
+            "title": "Tasks and Notes crud",
+            "description": "Just another Lorem",
+            "start_time": "24/11/2022 8:30:00",
+            "end_time": "24/11/2022 9:40:00"
+        }
+    '''
     body = request.get_json()
     # Note that time period has been dropped and end_time added
     title = body.get("title")
@@ -399,6 +461,23 @@ def create_task():
 @cross_origin()
 @login_required
 def view_task():
+    '''
+        Function to return tasks already created, expected response \n
+        {
+            "success": true,
+            "tasks": {
+                "current_tasks": [],
+                "past_tasks": [],
+                "upcoming_tasks": [
+                    {
+                        "description": "Just another Lorem, This is to test current_user can be added to user id",
+                        "end_time": "24/12/2022 9:40:00",
+                        "id": 128,
+                        "start_time": "24/12/2022 8:30:00",
+                        "title": "Tasks & Notes crud"
+                    },
+                ]
+    '''
     tasks = Task.query.join(User).filter(User.id==int(current_user.id)).all()
     past_tasks = []
     upcoming_tasks = []
@@ -450,7 +529,19 @@ def view_task():
 @cross_origin()
 @login_required
 def get_task(task_id):
-
+    '''
+        Function to get a specific task using it's id, example of returned task \n
+        {
+            "success": true,
+            "task": {
+                "description": "Just another Lorem, This is to test current_user can be added to user id",
+                "end_time": "24/11/2022 9:40:00",
+                "id": 129,
+                "start_time": "24/11/2022 8:30:00",
+                "title": "Tasks crud"
+            }
+        }
+    '''
     try:
         task = Task.query.join(User).filter(User.id == current_user.id).filter(
             Task.id == task_id).one_or_none()
@@ -474,7 +565,15 @@ def get_task(task_id):
 @cross_origin()
 @login_required
 def edit_task(task_id):
-
+    '''
+        Function to edit already existing task, example of input \n
+        {
+            "title": "To be updated tawwwwa",
+            "description": "Just another Lorem, This is to test current_user can be added to user id",
+            "start_time": "24/11/2022 8:30:00",
+            "end_time": "24/11/2022 9:40:00"
+        }
+    '''
     body = request.get_json()
 
     try:
@@ -500,7 +599,7 @@ def edit_task(task_id):
 @cross_origin()
 @login_required
 def delete_task(task_id):
-
+    '''Function to delete task using it's id'''
     try:
         task = Task.query.join(User).filter(User.id==current_user.id).filter(Task.id == task_id).one_or_none()
         if task is None:

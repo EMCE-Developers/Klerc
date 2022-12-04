@@ -20,6 +20,7 @@ click = "*"
 aniso8601 = "*"
 flask-login = "*"
 flask-bcrypt = "*"
+pytest = "*"
 
 [dev-packages]
 
