@@ -78,17 +78,18 @@ def token_required(f):
         if 'x-access-tokens' in request.headers:
             #token = request.headers['x-access-tokens']
             token = request.args.get('token')
-    
+
         if not token:
             print(token)
             return jsonify({'message': 'a valid token is missing'})
         try:
             data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=["HS256"])
             current_user = User.query.filter_by(public_id=data['public_id']).first()
-        except:
+        except Exception:
             return jsonify({'message': 'token is invalid'})
-    
+
         return f(current_user, *args, **kwargs)
+
     return decorator
 
 @app.route('/')
@@ -168,7 +169,7 @@ def login():
         })
     token = jwt.encode(
         {
-            'public_id': user.public_id, 'exp': datetime.now(timezone.utc) + timedelta(minutes=5)
+            'public_id': user.public_id, 'exp': datetime.now(timezone.utc) + timedelta(minutes=45)
         }, app.config['SECRET_KEY'], "HS256"
     )
     print(type(token))
@@ -222,7 +223,7 @@ def new_category(current_user):
     body = request.get_json()
     new_name = body.get('name')
     name = new_name.lower()
-    if categories := Category.query.filter_by(name=name).first():
+    if categories := Category.query.filter(Category.user_id==current_user.id).filter_by(name=name).first():
         return jsonify({
             "success": False,
             "message": f"Category {name} already exists!"
