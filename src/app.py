@@ -73,6 +73,8 @@ def register():
     '''
     body = request.get_json()
     # # Get user info
+    first_name = body.get("first_name")
+    last_name = body.get("last_name")
     email = body.get("email")
     username = body.get("username")
     password = body.get("password")
@@ -80,6 +82,8 @@ def register():
     # New user's details are saved to the database
     try:
         new_user = User(
+            first_name=first_name,
+            last_name=last_name,
             email=email,
             username=username,
             password=generate_password_hash(password, 10),

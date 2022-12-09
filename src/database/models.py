@@ -26,9 +26,8 @@ class User(db.Model, UserMixin):
     __tablename__ = 'user'
 
     id = db.Column(db.Integer, primary_key=True)
-    # Removing first and last name since API is to be accessed by another app
-    # first_name = db.Column(db.String)
-    # last_name = db.Column(db.String)
+    first_name = db.Column(db.String)
+    last_name = db.Column(db.String)
     email = db.Column(db.String)
     username = db.Column(db.String, unique=True)
     password = db.Column(db.String)
