@@ -1,0 +1,177 @@
+ERROR in app: Exception on /notes/15 [GET]
+Traceback (most recent call last):
+  File "C:\Users\Celestine\.virtualenvs\celestine-Klerc-g1rcJj5O\lib\site-packages\flask\app.py", line 1820, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Users\Celestine\.virtualenvs\celestine-Klerc-g1rcJj5O\lib\site-packages\flask\app.py", line 1796, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+  File "C:\Users\Celestine\.virtualenvs\celestine-Klerc-g1rcJj5O\lib\site-packages\flask_cors\decorator.py", line 128, in wrapped_function
+    resp = make_response(f(*args, **kwargs))
+  File "C:\Users\Celestine\Desktop\Git\Nanodegree\celestine-Klerc\src\app.py", line 77, in decorator
+    token = get_token_auth_header()
+  File "C:\Users\Celestine\Desktop\Git\Nanodegree\celestine-Klerc\src\app.py", line 48, in get_token_auth_header
+    raise AuthError({
+src.app.AuthError: ({'code': 'authorization_header_missing', 'description': 'Authorization header is expected.'}, 401)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Celestine\.virtualenvs\celestine-Klerc-g1rcJj5O\lib\site-packages\flask\app.py", line 2525, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\Celestine\.virtualenvs\celestine-Klerc-g1rcJj5O\lib\site-packages\flask\app.py", line 1822, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\Celestine\.virtualenvs\celestine-Klerc-g1rcJj5O\lib\site-packages\flask_cors\extension.py", line 165, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+  File "C:\Users\Celestine\.virtualenvs\celestine-Klerc-g1rcJj5O\lib\site-packages\flask_cors\extension.py", line 182, in cors_after_request
+    if try_match(normalized_path, res_regex):
+  File "C:\Users\Celestine\.virtualenvs\celestine-Klerc-g1rcJj5O\lib\site-packages\flask_cors\core.py", line 280, in try_match
+    return re.match(maybe_regex, request_origin, flags=re.IGNORECASE)
+  File "C:\Users\Celestine\AppData\Local\Programs\Python\Python310\lib\re.py", line 190, in match
+    return _compile(pattern, flags).match(string)
+  File "C:\Users\Celestine\AppData\Local\Programs\Python\Python310\lib\re.py", line 303, in _compile
+    p = sre_compile.compile(pattern, flags)
+  File "C:\Users\Celestine\AppData\Local\Programs\Python\Python310\lib\sre_compile.py", line 788, in compile
+    p = sre_parse.parse(p, flags)
+  File "C:\Users\Celestine\AppData\Local\Programs\Python\Python310\lib\sre_parse.py", line 955, in parse
+    p = _parse_sub(source, state, flags & SRE_FLAG_VERBOSE, 0)
+  File "C:\Users\Celestine\AppData\Local\Programs\Python\Python310\lib\sre_parse.py", line 444, in _parse_sub
+    itemsappend(_parse(source, state, verbose, nested + 1,
+  File "C:\Users\Celestine\AppData\Local\Programs\Python\Python310\lib\sre_parse.py", line 669, in _parse
+    raise source.error("nothing to repeat",
+re.error: nothing to repeat at position 0
+ERROR in app: Request finalizing failed with an error while handling an error
+Traceback (most recent call last):
+  File "C:\Users\Celestine\.virtualenvs\celestine-Klerc-g1rcJj5O\lib\site-packages\flask\app.py", line 1820, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Users\Celestine\.virtualenvs\celestine-Klerc-g1rcJj5O\lib\site-packages\flask\app.py", line 1796, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+  File "C:\Users\Celestine\.virtualenvs\celestine-Klerc-g1rcJj5O\lib\site-packages\flask_cors\decorator.py", line 128, in wrapped_function
+    resp = make_response(f(*args, **kwargs))
+  File "C:\Users\Celestine\Desktop\Git\Nanodegree\celestine-Klerc\src\app.py", line 77, in decorator
+    token = get_token_auth_header()
+  File "C:\Users\Celestine\Desktop\Git\Nanodegree\celestine-Klerc\src\app.py", line 48, in get_token_auth_header
+    raise AuthError({
+src.app.AuthError: ({'code': 'authorization_header_missing', 'description': 'Authorization header is expected.'}, 401)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Celestine\.virtualenvs\celestine-Klerc-g1rcJj5O\lib\site-packages\flask\app.py", line 2525, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\Celestine\.virtualenvs\celestine-Klerc-g1rcJj5O\lib\site-packages\flask\app.py", line 1822, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\Celestine\.virtualenvs\celestine-Klerc-g1rcJj5O\lib\site-packages\flask_cors\extension.py", line 165, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+  File "C:\Users\Celestine\.virtualenvs\celestine-Klerc-g1rcJj5O\lib\site-packages\flask_cors\extension.py", line 182, in cors_after_request
+    if try_match(normalized_path, res_regex):
+  File "C:\Users\Celestine\.virtualenvs\celestine-Klerc-g1rcJj5O\lib\site-packages\flask_cors\core.py", line 280, in try_match
+    return re.match(maybe_regex, request_origin, flags=re.IGNORECASE)
+  File "C:\Users\Celestine\AppData\Local\Programs\Python\Python310\lib\re.py", line 190, in match
+    return _compile(pattern, flags).match(string)
+  File "C:\Users\Celestine\AppData\Local\Programs\Python\Python310\lib\re.py", line 303, in _compile
+    p = sre_compile.compile(pattern, flags)
+  File "C:\Users\Celestine\AppData\Local\Programs\Python\Python310\lib\sre_compile.py", line 788, in compile
+    p = sre_parse.parse(p, flags)
+  File "C:\Users\Celestine\AppData\Local\Programs\Python\Python310\lib\sre_parse.py", line 955, in parse
+    p = _parse_sub(source, state, flags & SRE_FLAG_VERBOSE, 0)
+  File "C:\Users\Celestine\AppData\Local\Programs\Python\Python310\lib\sre_parse.py", line 444, in _parse_sub
+    itemsappend(_parse(source, state, verbose, nested + 1,
+  File "C:\Users\Celestine\AppData\Local\Programs\Python\Python310\lib\sre_parse.py", line 669, in _parse
+    raise source.error("nothing to repeat",
+re.error: nothing to repeat at position 0
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Celestine\.virtualenvs\celestine-Klerc-g1rcJj5O\lib\site-packages\flask\app.py", line 1844, in finalize_request
+    response = self.process_response(response)
+  File "C:\Users\Celestine\.virtualenvs\celestine-Klerc-g1rcJj5O\lib\site-packages\flask\app.py", line 2337, in process_response
+    response = self.ensure_sync(func)(response)
+  File "C:\Users\Celestine\.virtualenvs\celestine-Klerc-g1rcJj5O\lib\site-packages\flask_cors\extension.py", line 182, in cors_after_request
+    if try_match(normalized_path, res_regex):
+  File "C:\Users\Celestine\.virtualenvs\celestine-Klerc-g1rcJj5O\lib\site-packages\flask_cors\core.py", line 280, in try_match
+    return re.match(maybe_regex, request_origin, flags=re.IGNORECASE)
+  File "C:\Users\Celestine\AppData\Local\Programs\Python\Python310\lib\re.py", line 190, in match
+    return _compile(pattern, flags).match(string)
+  File "C:\Users\Celestine\AppData\Local\Programs\Python\Python310\lib\re.py", line 303, in _compile
+    p = sre_compile.compile(pattern, flags)
+  File "C:\Users\Celestine\AppData\Local\Programs\Python\Python310\lib\sre_compile.py", line 788, in compile
+    p = sre_parse.parse(p, flags)
+  File "C:\Users\Celestine\AppData\Local\Programs\Python\Python310\lib\sre_parse.py", line 955, in parse
+    p = _parse_sub(source, state, flags & SRE_FLAG_VERBOSE, 0)
+  File "C:\Users\Celestine\AppData\Local\Programs\Python\Python310\lib\sre_parse.py", line 444, in _parse_sub
+    itemsappend(_parse(source, state, verbose, nested + 1,
+  File "C:\Users\Celestine\AppData\Local\Programs\Python\Python310\lib\sre_parse.py", line 669, in _parse
+    raise source.error("nothing to repeat",
+re.error: nothing to repeat at position 0
+INFO in _internal: 127.0.0.1 - - [09/Dec/2022 17:44:35] "[35m[1mGET /notes/15 HTTP/1.1[0m" 500 -
+ERROR in _internal: Error on request:
+Traceback (most recent call last):
+  File "C:\Users\Celestine\.virtualenvs\celestine-Klerc-g1rcJj5O\lib\site-packages\flask\app.py", line 1820, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Users\Celestine\.virtualenvs\celestine-Klerc-g1rcJj5O\lib\site-packages\flask\app.py", line 1796, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+  File "C:\Users\Celestine\.virtualenvs\celestine-Klerc-g1rcJj5O\lib\site-packages\flask_cors\decorator.py", line 128, in wrapped_function
+    resp = make_response(f(*args, **kwargs))
+  File "C:\Users\Celestine\Desktop\Git\Nanodegree\celestine-Klerc\src\app.py", line 77, in decorator
+    token = get_token_auth_header()
+  File "C:\Users\Celestine\Desktop\Git\Nanodegree\celestine-Klerc\src\app.py", line 48, in get_token_auth_header
+    raise AuthError({
+src.app.AuthError: ({'code': 'authorization_header_missing', 'description': 'Authorization header is expected.'}, 401)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Celestine\.virtualenvs\celestine-Klerc-g1rcJj5O\lib\site-packages\flask\app.py", line 2525, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\Celestine\.virtualenvs\celestine-Klerc-g1rcJj5O\lib\site-packages\flask\app.py", line 1822, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\Celestine\.virtualenvs\celestine-Klerc-g1rcJj5O\lib\site-packages\flask_cors\extension.py", line 165, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+  File "C:\Users\Celestine\.virtualenvs\celestine-Klerc-g1rcJj5O\lib\site-packages\flask_cors\extension.py", line 182, in cors_after_request
+    if try_match(normalized_path, res_regex):
+  File "C:\Users\Celestine\.virtualenvs\celestine-Klerc-g1rcJj5O\lib\site-packages\flask_cors\core.py", line 280, in try_match
+    return re.match(maybe_regex, request_origin, flags=re.IGNORECASE)
+  File "C:\Users\Celestine\AppData\Local\Programs\Python\Python310\lib\re.py", line 190, in match
+    return _compile(pattern, flags).match(string)
+  File "C:\Users\Celestine\AppData\Local\Programs\Python\Python310\lib\re.py", line 303, in _compile
+    p = sre_compile.compile(pattern, flags)
+  File "C:\Users\Celestine\AppData\Local\Programs\Python\Python310\lib\sre_compile.py", line 788, in compile
+    p = sre_parse.parse(p, flags)
+  File "C:\Users\Celestine\AppData\Local\Programs\Python\Python310\lib\sre_parse.py", line 955, in parse
+    p = _parse_sub(source, state, flags & SRE_FLAG_VERBOSE, 0)
+  File "C:\Users\Celestine\AppData\Local\Programs\Python\Python310\lib\sre_parse.py", line 444, in _parse_sub
+    itemsappend(_parse(source, state, verbose, nested + 1,
+  File "C:\Users\Celestine\AppData\Local\Programs\Python\Python310\lib\sre_parse.py", line 669, in _parse
+    raise source.error("nothing to repeat",
+re.error: nothing to repeat at position 0
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Celestine\.virtualenvs\celestine-Klerc-g1rcJj5O\lib\site-packages\werkzeug\serving.py", line 335, in run_wsgi
+    execute(self.server.app)
+  File "C:\Users\Celestine\.virtualenvs\celestine-Klerc-g1rcJj5O\lib\site-packages\werkzeug\serving.py", line 322, in execute
+    application_iter = app(environ, start_response)
+  File "C:\Users\Celestine\.virtualenvs\celestine-Klerc-g1rcJj5O\lib\site-packages\flask\app.py", line 2548, in __call__
+    return self.wsgi_app(environ, start_response)
+  File "C:\Users\Celestine\.virtualenvs\celestine-Klerc-g1rcJj5O\lib\site-packages\flask\app.py", line 2528, in wsgi_app
+    response = self.handle_exception(e)
+  File "C:\Users\Celestine\.virtualenvs\celestine-Klerc-g1rcJj5O\lib\site-packages\flask_cors\extension.py", line 165, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+  File "C:\Users\Celestine\.virtualenvs\celestine-Klerc-g1rcJj5O\lib\site-packages\flask_cors\extension.py", line 182, in cors_after_request
+    if try_match(normalized_path, res_regex):
+  File "C:\Users\Celestine\.virtualenvs\celestine-Klerc-g1rcJj5O\lib\site-packages\flask_cors\core.py", line 280, in try_match
+    return re.match(maybe_regex, request_origin, flags=re.IGNORECASE)
+  File "C:\Users\Celestine\AppData\Local\Programs\Python\Python310\lib\re.py", line 190, in match
+    return _compile(pattern, flags).match(string)
+  File "C:\Users\Celestine\AppData\Local\Programs\Python\Python310\lib\re.py", line 303, in _compile
+    p = sre_compile.compile(pattern, flags)
+  File "C:\Users\Celestine\AppData\Local\Programs\Python\Python310\lib\sre_compile.py", line 788, in compile
+    p = sre_parse.parse(p, flags)
+  File "C:\Users\Celestine\AppData\Local\Programs\Python\Python310\lib\sre_parse.py", line 955, in parse
+    p = _parse_sub(source, state, flags & SRE_FLAG_VERBOSE, 0)
+  File "C:\Users\Celestine\AppData\Local\Programs\Python\Python310\lib\sre_parse.py", line 444, in _parse_sub
+    itemsappend(_parse(source, state, verbose, nested + 1,
+  File "C:\Users\Celestine\AppData\Local\Programs\Python\Python310\lib\sre_parse.py", line 669, in _parse
+    raise source.error("nothing to repeat",
+re.error: nothing to repeat at position 0

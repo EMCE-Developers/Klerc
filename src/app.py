@@ -80,7 +80,6 @@ def token_required(f):
             token = request.args.get('token')
 
         if not token:
-            print(token)
             return jsonify({'message': 'a valid token is missing'})
         try:
             data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=["HS256"])
@@ -193,27 +192,26 @@ def login():
 
 
 # Made this endpoint to see what is stored in the database
-@app.route('/users', methods=['GET'])
-@cross_origin()
-def users():
-    try:
-        users = User.query.all()
-        formatted_users = [
-            {user.date_created: user.username, "id": user.public_id} for user in users]
-
-        return jsonify({
-            "success": True,
-            "users": formatted_users
-        })
-    except Exception:
-        abort(401)
+# @app.route('/users', methods=['GET'])
+# @cross_origin()
+# def users():
+#     try:
+#         users = User.query.all()
+#         formatted_users = [
+#             {user.date_created: user.username, "id": user.public_id} for user in users]
+# 
+#         return jsonify({
+#             "success": True,
+#             "users": formatted_users
+#         })
+#     except Exception:
+#         abort(401)
 
 
 @app.route('/categories', methods=['POST'])
 @cross_origin()
 @token_required
 def new_category(current_user):
-    print(current_user.id)
     '''
     Function to add new category, expected input should come in this format, \n
     {
