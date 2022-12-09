@@ -181,7 +181,8 @@ def login():
 
 @app.route('/categories', methods=['POST'])
 @cross_origin()
-def new_category():
+@token_required
+def new_category(current_user):
     '''
     Function to add new category, expected input should come in this format, \n
     {
@@ -208,7 +209,8 @@ def new_category():
 # changed the create_note endpoint from '/notes.
 @app.route('/notes', methods=['POST'])
 @cross_origin()
-def create_note():
+@token_required
+def create_note(current_user):
     '''
     Function to create notes, expected input should come in this format \n
     {
@@ -249,7 +251,8 @@ def create_note():
 
 @app.route('/notes/<int:note_id>', methods=['GET'])
 @cross_origin()
-def get_note(note_id):
+@token_required
+def get_note(current_user, note_id):
     '''
         Function to get a specific note using the id
         expected response will look similar to this \n
@@ -282,7 +285,8 @@ def get_note(note_id):
 # get all notes
 @ app.route('/notes', methods=['GET'])
 @ cross_origin()
-def get_notes():
+@token_required
+def get_notes(current_user):
     '''Function to view notes, expected response should return notes authorized by user eg \n
         {
             "notes": [
@@ -326,7 +330,8 @@ def get_notes():
 # get all notes by category
 @ app.route('/notes/category/<string:category>', methods=['GET'])
 @ cross_origin()
-def get_notes_by_category(category):
+@token_required
+def get_notes_by_category(current_user, category):
     '''
         Function to get notes by category name, searches with given \n
         characters to return notes with category names having those characters. 
@@ -375,7 +380,8 @@ def get_notes_by_category(category):
 # Update a note by id
 @app.route('/notes/<int:note_id>', methods=['PUT', 'PATCH'])
 @cross_origin()
-def edit_note(note_id):
+@token_required
+def edit_note(current_user, note_id):
     '''
         Function to edit existing note, example of expected input; \n
         {
@@ -405,7 +411,8 @@ def edit_note(note_id):
 
 @app.route('/notes/<int:note_id>', methods=['DELETE'])
 @cross_origin()
-def delete_note(note_id):
+@token_required
+def delete_note(current_user, note_id):
     '''
         Function to delete note
     '''
@@ -423,7 +430,8 @@ def delete_note(note_id):
 
 @app.route('/tasks', methods=['POST'])
 @cross_origin()
-def create_task():
+@token_required
+def create_task(current_user):
     '''
         Function to create task, expected input; \n
         {
@@ -476,7 +484,8 @@ def create_task():
 
 @app.route('/tasks', methods=['GET'])
 @cross_origin()
-def view_task():
+@token_required
+def view_task(current_user):
     '''
         Function to return tasks already created, expected response \n
         {
@@ -543,7 +552,8 @@ def view_task():
 
 @app.route('/tasks/<int:task_id>', methods=['GET'])
 @cross_origin()
-def get_task(task_id):
+@token_required
+def get_task(current_user, task_id):
     '''
         Function to get a specific task using it's id, example of returned task \n
         {
@@ -578,7 +588,8 @@ def get_task(task_id):
 
 @app.route('/tasks/<int:task_id>', methods=['PUT', 'PATCH'])
 @cross_origin()
-def edit_task(task_id):
+@token_required
+def edit_task(current_user, task_id):
     '''
         Function to edit already existing task, example of input \n
         {
@@ -611,7 +622,8 @@ def edit_task(task_id):
 
 @app.route('/tasks/<int:task_id>', methods=['DELETE'])
 @cross_origin()
-def delete_task(task_id):
+@token_required
+def delete_task(current_user, task_id):
     '''Function to delete task using it's id'''
     try:
         task = Task.query.join(User).filter(User.id==current_user.id).filter(Task.id == task_id).one_or_none()
