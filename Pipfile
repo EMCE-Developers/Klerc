@@ -21,6 +21,8 @@ aniso8601 = "*"
 flask-login = "*"
 flask-bcrypt = "*"
 pytest = "*"
+jwt = "*"
+uuid = "*"
 
 [dev-packages]
 

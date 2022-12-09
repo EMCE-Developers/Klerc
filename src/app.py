@@ -1,7 +1,11 @@
 from flask import Flask, abort, jsonify, request
 from flask_cors import CORS, cross_origin
 from flask_migrate import Migrate
-from flask_login import LoginManager, login_user, logout_user, login_required, current_user
+# Using jwt tokens instead
+# from flask_login import LoginManager, login_user, logout_user, login_required, current_user
+from functools import wraps
+import jwt
+import uuid
 from flask_bcrypt import Bcrypt, generate_password_hash, check_password_hash
 from datetime import datetime
 import logging
@@ -13,8 +17,8 @@ setup_db(app)
 app.config['SECRET_KEY'] = '$51335EMCE53315$'
 bcrypt = Bcrypt(app)
 CORS(app, resources={r"*/api/*": {"origins": "*"}})
-login_manager = LoginManager()
-login_manager.init_app(app)
+# login_manager = LoginManager()
+# login_manager.init_app(app)
 migrate = Migrate(app, db)
 current_time = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 logging.basicConfig(filename='app.log', filemode='a', format='%(levelname)s in %(module)s: %(message)s', datefmt='%d-%b-%y %H:%M:%S')
@@ -23,13 +27,30 @@ logging.basicConfig(filename='app.log', filemode='a', format='%(levelname)s in %
 #   db_drop_and_create_all()
 
 
-@login_manager.user_loader
-def load_user(user_id):
-    try:
-        return User.query.get(int(user_id))
-    except Exception:
-        return None
+# @login_manager.user_loader
+# def load_user(user_id):
+#     try:
+#         return User.query.get(int(user_id))
+#     except Exception:
+#         return None
 
+def token_required(f):
+    @wraps(f)
+    def decorator(*args, **kwargs):
+        token = None
+        if 'x-access-tokens' in request.headers:
+            token = request.headers['x-access-tokens']
+    
+        if not token:
+            return jsonify({'message': 'a valid token is missing'})
+        try:
+            data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=["HS256"])
+            current_user = User.query.filter_by(public_id=data['public_id']).first()
+        except Exception:
+            return jsonify({'message': 'token is invalid'})
+    
+        return f(current_user, *args, **kwargs)
+    return decorator
 
 @app.route('/')
 @cross_origin()
@@ -45,8 +66,6 @@ def register():
     '''
     Used to register a new account, expected input should come in this format \n
     {
-        "first_name": "Eiyzy",
-        "last_name": "Eusy",
         "email": "test005@test.com",
         "username": "Bee5",
         "password": "test5"
@@ -54,8 +73,6 @@ def register():
     '''
     body = request.get_json()
     # # Get user info
-    first_name = body.get("first_name")
-    last_name = body.get("last_name")
     email = body.get("email")
     username = body.get("username")
     password = body.get("password")
@@ -63,11 +80,10 @@ def register():
     # New user's details are saved to the database
     try:
         new_user = User(
-            first_name=first_name,
-            last_name=last_name,
             email=email,
             username=username,
             password=generate_password_hash(password, 10),
+            public_id=str(uuid.uuid4()),
             date_created=current_time,
         )
         if user := User.query.filter_by(username=username).first():
@@ -111,29 +127,34 @@ def login():
                 "message": "Invalid username or password"
             })
 
-        login_user(user)
-        return ({
-            "success": True,
-            "message": "Login successful"
-        })
+        # login_user(user)
+        # return ({
+        #     "success": True,
+        #     "message": "Login successful"
+        # })
+
+        token = jwt.encode(
+            {
+                'public_id' : user.public_id, 'exp' : datetime.datetime.utcnow() + datetime.timedelta(minutes=5)
+            }, app.config['SECRET_KEY'], "HS256")
+        return jsonify({'token' : token})
+
     except Exception:
-        logging.exception("message")
         abort(400)
 
 
-@app.route('/logout', methods=['GET', 'POST'])
-@cross_origin()
-@login_required
-def logout():
-    '''Function to log a user out'''
-    try:
-        logout_user()
-        return ({
-            "success": True,
-            "message": "User logged out"
-        })
-    except Exception:
-        abort(400)
+#@app.route('/logout', methods=['GET', 'POST'])
+#@cross_origin()
+#def logout():
+#    '''Function to log a user out'''
+#    try:
+#        logout_user()
+#        return ({
+#            "success": True,
+#            "message": "User logged out"
+#        })
+#    except Exception:
+#        abort(400)
 
 
 # Made this endpoint to see what is stored in the database
@@ -156,7 +177,6 @@ def logout():
 
 @app.route('/categories', methods=['POST'])
 @cross_origin()
-@login_required
 def new_category():
     '''
     Function to add new category, expected input should come in this format, \n
@@ -184,7 +204,6 @@ def new_category():
 # changed the create_note endpoint from '/notes.
 @app.route('/notes', methods=['POST'])
 @cross_origin()
-@login_required
 def create_note():
     '''
     Function to create notes, expected input should come in this format \n
@@ -226,7 +245,6 @@ def create_note():
 
 @app.route('/notes/<int:note_id>', methods=['GET'])
 @cross_origin()
-@login_required
 def get_note(note_id):
     '''
         Function to get a specific note using the id
@@ -260,7 +278,6 @@ def get_note(note_id):
 # get all notes
 @ app.route('/notes', methods=['GET'])
 @ cross_origin()
-@ login_required
 def get_notes():
     '''Function to view notes, expected response should return notes authorized by user eg \n
         {
@@ -305,7 +322,6 @@ def get_notes():
 # get all notes by category
 @ app.route('/notes/category/<string:category>', methods=['GET'])
 @ cross_origin()
-@ login_required
 def get_notes_by_category(category):
     '''
         Function to get notes by category name, searches with given \n
@@ -355,7 +371,6 @@ def get_notes_by_category(category):
 # Update a note by id
 @app.route('/notes/<int:note_id>', methods=['PUT', 'PATCH'])
 @cross_origin()
-@login_required
 def edit_note(note_id):
     '''
         Function to edit existing note, example of expected input; \n
@@ -386,7 +401,6 @@ def edit_note(note_id):
 
 @app.route('/notes/<int:note_id>', methods=['DELETE'])
 @cross_origin()
-@login_required
 def delete_note(note_id):
     '''
         Function to delete note
@@ -405,7 +419,6 @@ def delete_note(note_id):
 
 @app.route('/tasks', methods=['POST'])
 @cross_origin()
-@login_required
 def create_task():
     '''
         Function to create task, expected input; \n
@@ -459,7 +472,6 @@ def create_task():
 
 @app.route('/tasks', methods=['GET'])
 @cross_origin()
-@login_required
 def view_task():
     '''
         Function to return tasks already created, expected response \n
@@ -527,7 +539,6 @@ def view_task():
 
 @app.route('/tasks/<int:task_id>', methods=['GET'])
 @cross_origin()
-@login_required
 def get_task(task_id):
     '''
         Function to get a specific task using it's id, example of returned task \n
@@ -563,7 +574,6 @@ def get_task(task_id):
 
 @app.route('/tasks/<int:task_id>', methods=['PUT', 'PATCH'])
 @cross_origin()
-@login_required
 def edit_task(task_id):
     '''
         Function to edit already existing task, example of input \n
@@ -597,7 +607,6 @@ def edit_task(task_id):
 
 @app.route('/tasks/<int:task_id>', methods=['DELETE'])
 @cross_origin()
-@login_required
 def delete_task(task_id):
     '''Function to delete task using it's id'''
     try:

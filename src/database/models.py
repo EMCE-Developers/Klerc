@@ -26,14 +26,16 @@ class User(db.Model, UserMixin):
     __tablename__ = 'user'
 
     id = db.Column(db.Integer, primary_key=True)
-    first_name = db.Column(db.String)
-    last_name = db.Column(db.String)
+    # Removing first and last name since API is to be accessed by another app
+    # first_name = db.Column(db.String)
+    # last_name = db.Column(db.String)
     email = db.Column(db.String)
     username = db.Column(db.String, unique=True)
     password = db.Column(db.String)
+    # Adding public_id
+    public_id = db.Column(db.Integer)
     date_created = db.Column(db.String)
     note = db.relationship('Note', backref=db.backref('Note', lazy=True))
-    # Added category relationship column
     category = db.relationship(
         'Category', backref=db.backref('Category', lazy=True))
     task = db.relationship('Task', backref=db.backref('Task', lazy=True))
