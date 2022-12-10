@@ -159,22 +159,24 @@ def login():
     password = body.get("password")
 
     #User should be able to login with his username to access resources
-    #try:
-    user = User.query.filter_by(username=username).first()
-    if not user and not check_password_hash(user.password, password):
-        return ({
-            "success": False,
-            "message": "Invalid username or password"
-        })
-    token = jwt.encode(
-        {
-            'public_id': user.public_id, 'exp': datetime.now(timezone.utc) + timedelta(minutes=45)
-        }, app.config['SECRET_KEY'], "HS256"
-    )
-    print(type(token))
-    return jsonify({'token' : token})
-    #except Exception:
-    #    abort(400)
+    try:
+        user = User.query.filter_by(username=username).first()
+        if not user and not check_password_hash(user.password, password):
+            return ({
+                "success": False,
+                "message": "Invalid username or password"
+            })
+        # Public_id was used so that user's details e.g username does not appear when
+        # the token is decoded.
+        token = jwt.encode(
+            {
+                'public_id': user.public_id, 'exp': datetime.now(timezone.utc) + timedelta(minutes=45)
+            }, app.config['SECRET_KEY'], "HS256"
+        )
+        print(type(token))
+        return jsonify({'token' : token})
+    except Exception:
+        abort(400)
 
 
 #@app.route('/logout', methods=['GET', 'POST'])
