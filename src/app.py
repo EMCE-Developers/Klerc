@@ -479,12 +479,15 @@ def create_task(current_user):
     start_time = body.get("start_time")
     end_time = body.get("end_time")
 
+    tasks = Task.query.filter(Task.user_id==current_user.id).all()
+    count = len(tasks)
     try:
         task = Task(
             title=title,
             content=content,
             start_time=start_time,
             end_time=end_time,
+            task_id=int(count+1),
             user_id=current_user.id,
         )
 
@@ -499,7 +502,7 @@ def create_task(current_user):
                 "success": False,
                 "message": "Please enter valid start time and time period for task"
             })
-        if start_time > end_time:
+        if start_time >= end_time:
             return jsonify({
                 "success": False,
                 "message": "Task finish time should be greater than start time"
@@ -545,7 +548,7 @@ def view_task(current_user):
             match [task.start_time <= current_time, task.end_time >= current_time]:
                 case [True, False]:
                     past_tasks.append({
-                        "id": task.id,
+                        "id": task.task_id,
                         "title": task.title,
                         "description": task.content,
                         "start_time": task.start_time,
@@ -553,7 +556,7 @@ def view_task(current_user):
                     })
                 case [True, True]:
                     current_tasks.append({
-                        "id": task.id,
+                        "id": task.task_id,
                         "title": task.title,
                         "description": task.content,
                         "start_time": task.start_time,
@@ -561,7 +564,7 @@ def view_task(current_user):
                     })
                 case [False, True]:
                     upcoming_tasks.append({
-                        "id": task.id,
+                        "id": task.task_id,
                         "title": task.title,
                         "description": task.content,
                         "start_time": task.start_time,
@@ -600,10 +603,10 @@ def get_task(current_user, task_id):
     '''
     try:
         task = Task.query.join(User).filter(User.id == current_user.id).filter(
-            Task.id == task_id).one_or_none()
+            Task.task_id == task_id).one_or_none()
 
         task_data = {
-            "id": task.id,
+            "id": task.task_id,
             "title": task.title,
             "description": task.content,
             "start_time": task.start_time,
@@ -634,13 +637,19 @@ def edit_task(current_user, task_id):
 
     try:
         task_to_update = Task.query.join(User).filter(
-            User.id == current_user.id).filter(Task.id == task_id).one_or_none()
+            User.id == current_user.id).filter(Task.task_id == task_id).one_or_none()
 
         task_to_update.title = body.get("title")
         task_to_update.content = body.get("description")
         task_to_update.start_time = body.get("start_time")
         task_to_update.end_time = body.get("end_time")
 
+        if task_to_update.start_time >= task_to_update.end_time:
+            return jsonify({
+                "success": False,
+                "message": "Task finish time should be greater than start time"
+            })
+        
         task_to_update.update()
 
         return ({
@@ -657,7 +666,7 @@ def edit_task(current_user, task_id):
 def delete_task(current_user, task_id):
     '''Function to delete task using it's id'''
     try:
-        task = Task.query.join(User).filter(User.id==current_user.id).filter(Task.id == task_id).one_or_none()
+        task = Task.query.join(User).filter(User.id==current_user.id).filter(Task.task_id == task_id).one_or_none()
         if task is None:
             abort(404)
         else:

@@ -31,7 +31,7 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String)
     username = db.Column(db.String, unique=True)
     password = db.Column(db.String)
-    # Adding public_id
+    # Added public_id
     public_id = db.Column(db.Integer)
     date_created = db.Column(db.String)
     note = db.relationship('Note', backref=db.backref('Note', lazy=True))
@@ -111,6 +111,8 @@ class Task(db.Model):
     __tablename__ = 'task'
 
     id = db.Column(db.Integer, primary_key=True)
+    # added task_id
+    task_id = db.Column(db.Integer)
     title = db.Column(db.String)
     content = db.Column(db.String)
     start_time = db.Column(db.String)
