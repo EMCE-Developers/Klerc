@@ -675,14 +675,14 @@ def bad_request(error):
     }), 400
 
 
-@app.errorhandler(401)
-@cross_origin()
-def unprocessable(error):
-    return jsonify({
-        "success": False,
-        "error": 401,
-        "message": "Unauthorized"
-    }), 401
+#@app.errorhandler(401)
+#@cross_origin()
+#def unprocessable(error):
+#    return jsonify({
+#        "success": False,
+#        "error": 401,
+#        "message": "Unauthorized"
+#    }), 401
 
 @app.errorhandler(404)
 @cross_origin()
@@ -711,7 +711,17 @@ def unprocessable(error):
         "message": "Unprocessable"
     }), 422
 
+# @app.errorhandler(500)
+# @cross_origin()
+# def special_exception_handler(error):
+#     return jsonify({
+#         "success": False,
+#         "error": 500,
+#         "message": 'Database connection failed'
+#     }), 500
+
 @app.errorhandler(AuthError)
+@cross_origin()
 def authentication_error(auth_error):
     return jsonify({
         "success": False,
