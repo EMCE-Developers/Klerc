@@ -22,7 +22,10 @@ CORS(app, resources={r"*/api/*": {"origins": "*"}})
 # login_manager.init_app(app)
 migrate = Migrate(app, db)
 current_time = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-logging.basicConfig(filename='app.log', filemode='w', format='%(levelname)s in %(module)s: %(message)s', datefmt='%d-%b-%y %H:%M:%S')
+logging.basicConfig(
+    filename='app.log', filemode='w', format='%(levelname)s in %(module)s: %(message)s', 
+    datefmt='%d-%b-%y %H:%M:%S'
+)
 
 # with app.app_context():
 #   db_drop_and_create_all()
@@ -173,7 +176,6 @@ def login():
                 'public_id': user.public_id, 'exp': datetime.now(timezone.utc) + timedelta(minutes=45)
             }, app.config['SECRET_KEY'], "HS256"
         )
-        print(type(token))
         return jsonify({'token' : token})
     except Exception:
         abort(400)
@@ -224,7 +226,8 @@ def create_category(current_user):
     new_name = body.get('name')
     name = new_name.lower()
 
-    count = len(Category.query.all())
+    cat = Category.query.filter(Category.user_id==current_user.id).all()
+    count = len(cat)
 
     if categories := Category.query.filter(Category.user_id==current_user.id).filter_by(name=name).first():
         return jsonify({
@@ -236,7 +239,7 @@ def create_category(current_user):
 
     return jsonify({
         "success": True,
-        "message": f"Category {name} added successfully!"
+        "message": f"Category {name} with id = {count} added successfully!"
     })
 
 # create new note  "methods=['POST']"
@@ -258,6 +261,8 @@ def create_note(current_user):
     content = body.get("content")
     category_id = body.get("category_id")
 
+    notes = Note.query.filter(Note.user_id==current_user.id).all()
+    count = len(notes)
     try:
         title = body.get("title")
         content = body.get("content")
@@ -266,7 +271,7 @@ def create_note(current_user):
         # add the note if previous condition is false
         new_note = Note(
             title=title, content=content, user_id=current_user.id,
-            category_id=category_id, date_created=current_time,
+            note_id=count+1, category_id=category_id, date_created=current_time,
         )
         if title is None:
             return ({
@@ -299,15 +304,13 @@ def get_note(current_user, note_id):
         }
     '''
     try:
-        if note := Note.query.join(User).filter(User.id==current_user.id).join(Category).filter(
-            Category.id==Note.category_id).filter(Note.id==note_id).one_or_none():
-        #if note := Note.query.join(User).filter(
-         #   User.id==current_user.id).filter(Note.id==note_id).one_or_none():
+        if note := Note.query.join(User).filter(User.id==current_user.id).filter(Note.note_id==note_id).one_or_none():
+        
             return jsonify({
                 "title": note.title,
                 "content": note.content,
                 "date_created": note.date_created,
-                "id": note.id,
+                "id": note.note_id,
                 "category_id": note.category_id
             })
         else:
@@ -348,7 +351,7 @@ def get_notes(current_user):
         note_data.extend(
             {
                 "title": note.title, "content": note.content,
-                "date_created": note.date_created, "id": note.id,
+                "date_created": note.date_created, "id": note.note_id,
                 "category_id": note.category_id
             } for note in notes)
 
@@ -399,7 +402,7 @@ def get_notes_by_category(current_user, category):
         note_data.extend(
             {
                 "title": note.title, "content": note.content, 
-                "date_created": note.date_created, "id": note.id,
+                "date_created": note.date_created, "id": note.note_id,
                 "category": note.category_id
             } for note in notes)
 
@@ -427,8 +430,7 @@ def edit_note(current_user, note_id):
     # body includes the json body or form data field we would like to edit.
     body = request.get_json()
     try:
-        note_to_update = Note.query.join(User).filter(User.id==current_user.id).join(Category).filter(
-            Category.id==Note.category_id).filter(Note.id==note_id).one_or_none()
+        note_to_update = Note.query.join(User).filter(User.id==current_user.id).filter(Note.note_id==note_id).one_or_none()
 
         note_to_update.title = body.get("title")
         note_to_update.content = body.get("content")
@@ -452,7 +454,7 @@ def delete_note(current_user, note_id):
     '''
     try:
         note= Note.query.join(User).filter(User.id==current_user.id).filter(
-            Note.id == note_id).one_or_none()
+            Note.note_id == note_id).one_or_none()
         if note is None:
             abort(404)
         else:
@@ -547,7 +549,7 @@ def view_task(current_user):
 
     try:
         for task in tasks:
-
+            
             match [task.start_time <= current_time, task.end_time >= current_time]:
                 case [True, False]:
                     past_tasks.append({
