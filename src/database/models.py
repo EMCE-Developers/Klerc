@@ -58,15 +58,13 @@ class Note(db.Model):
     __tablename__ = 'note'
 
     id = db.Column(db.Integer, primary_key=True)
+    # Added note id
+    note_id = db.Column(db.Integer)
     title = db.Column(db.String)
     content = db.Column(db.String)
     date_created = db.Column(db.String, default=datetime.now(), nullable=False)
-
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     category_id = db.Column(db.Integer, db.ForeignKey('category.id'))
-
-    # task_id to be removed so task will not rely on Note
-    #task_id = db.Column(db.Integer, db.ForeignKey('task.id'))
 
     def __repre__(self):
         return f'<User {self.id} {self.title} {self.content}>'
