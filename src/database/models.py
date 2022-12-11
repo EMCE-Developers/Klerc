@@ -92,6 +92,8 @@ class Category(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
+    # Added cat_id
+    cat_id = db.Column(db.Integer)
     # Added user_id
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     note = db.relationship('Note', backref=db.backref('note', lazy=True))

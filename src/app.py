@@ -213,7 +213,7 @@ def login():
 @app.route('/categories', methods=['POST'])
 @cross_origin()
 @token_required
-def new_category(current_user):
+def create_category(current_user):
     '''
     Function to add new category, expected input should come in this format, \n
     {
@@ -223,12 +223,15 @@ def new_category(current_user):
     body = request.get_json()
     new_name = body.get('name')
     name = new_name.lower()
+
+    count = len(Category.query.all())
+
     if categories := Category.query.filter(Category.user_id==current_user.id).filter_by(name=name).first():
         return jsonify({
             "success": False,
             "message": f"Category {name} already exists!"
         })
-    category = Category(name=name, user_id=current_user.id)
+    category = Category(name=name, user_id=current_user.id, cat_id=count+1)
     category.insert()
 
     return jsonify({
