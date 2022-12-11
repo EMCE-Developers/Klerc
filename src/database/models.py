@@ -94,7 +94,6 @@ class Category(db.Model):
     name = db.Column(db.String)
     # Added cat_id
     cat_id = db.Column(db.Integer)
-    # Added user_id
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     note = db.relationship('Note', backref=db.backref('note', lazy=True))
 
@@ -118,9 +117,6 @@ class Task(db.Model):
     title = db.Column(db.String)
     content = db.Column(db.String)
     start_time = db.Column(db.String)
-    # Removing the time_period and adding
-    # end_time
-    #time_period = db.Column(db.String)
     end_time = db.Column(db.String)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
