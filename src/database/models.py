@@ -31,9 +31,10 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String)
     username = db.Column(db.String, unique=True)
     password = db.Column(db.String)
+    # Added public_id
+    public_id = db.Column(db.Integer)
     date_created = db.Column(db.String)
     note = db.relationship('Note', backref=db.backref('Note', lazy=True))
-    # Added category relationship column
     category = db.relationship(
         'Category', backref=db.backref('Category', lazy=True))
     task = db.relationship('Task', backref=db.backref('Task', lazy=True))
@@ -91,7 +92,8 @@ class Category(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
-    # Added user_id
+    # Added cat_id
+    cat_id = db.Column(db.Integer)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     note = db.relationship('Note', backref=db.backref('note', lazy=True))
 
@@ -110,12 +112,11 @@ class Task(db.Model):
     __tablename__ = 'task'
 
     id = db.Column(db.Integer, primary_key=True)
+    # added task_id
+    task_id = db.Column(db.Integer)
     title = db.Column(db.String)
     content = db.Column(db.String)
     start_time = db.Column(db.String)
-    # Removing the time_period and adding
-    # end_time
-    #time_period = db.Column(db.String)
     end_time = db.Column(db.String)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 

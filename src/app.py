@@ -1,10 +1,15 @@
-from flask import Flask, abort, jsonify, request
+from flask import Flask, abort, jsonify, request, make_response
 from flask_cors import CORS, cross_origin
 from flask_migrate import Migrate
-from flask_login import LoginManager, login_user, logout_user, login_required, current_user
+# Using jwt tokens instead
+# from flask_login import LoginManager, login_user, logout_user, login_required, current_user
+from functools import wraps
+import jwt
+import uuid
 from flask_bcrypt import Bcrypt, generate_password_hash, check_password_hash
-from datetime import datetime
+from datetime import datetime, timedelta
 import logging
+from datetime import timezone
 from .database.models import Note, db, Task, Category, User, db_drop_and_create_all, setup_db
 
 
@@ -13,23 +18,78 @@ setup_db(app)
 app.config['SECRET_KEY'] = '$51335EMCE53315$'
 bcrypt = Bcrypt(app)
 CORS(app, resources={r"*/api/*": {"origins": "*"}})
-login_manager = LoginManager()
-login_manager.init_app(app)
+# login_manager = LoginManager()
+# login_manager.init_app(app)
 migrate = Migrate(app, db)
 current_time = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-logging.basicConfig(filename='app.log', filemode='a', format='%(levelname)s in %(module)s: %(message)s', datefmt='%d-%b-%y %H:%M:%S')
+logging.basicConfig(filename='app.log', filemode='w', format='%(levelname)s in %(module)s: %(message)s', datefmt='%d-%b-%y %H:%M:%S')
 
 # with app.app_context():
 #   db_drop_and_create_all()
 
 
-@login_manager.user_loader
-def load_user(user_id):
-    try:
-        return User.query.get(int(user_id))
-    except Exception:
-        return None
+# @login_manager.user_loader
+# def load_user(user_id):
+#     try:
+#         return User.query.get(int(user_id))
+#     except Exception:
+#         return None
 
+class AuthError(Exception):
+    def __init__(self, error, status_code):
+        self.error = error
+        self.status_code = status_code
+
+def get_token_auth_header():
+    """Obtains the Access Token from the Authorization Header
+    """
+    auth = request.headers.get('Authorization', None)
+    if not auth:
+        raise AuthError({
+            'code': 'authorization_header_missing',
+            'description': 'Authorization header is expected.'
+        }, 401)
+
+    parts = auth.split()
+    if parts[0].lower() != 'bearer':
+        raise AuthError({
+            'code': 'invalid_header',
+            'description': 'Authorization header must start with "Bearer".'
+        }, 401)
+
+    elif len(parts) == 1:
+        raise AuthError({
+            'code': 'invalid_header',
+            'description': 'Token not found.'
+        }, 401)
+
+    elif len(parts) > 2:
+        raise AuthError({
+            'code': 'invalid_header',
+            'description': 'Authorization header must be bearer token.'
+        }, 401)
+
+    return parts[1]
+    
+def token_required(f):
+    @wraps(f)
+    def decorator(*args, **kwargs):
+        token = get_token_auth_header()
+        if 'x-access-tokens' in request.headers:
+            #token = request.headers['x-access-tokens']
+            token = request.args.get('token')
+
+        if not token:
+            return jsonify({'message': 'a valid token is missing'})
+        try:
+            data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=["HS256"])
+            current_user = User.query.filter_by(public_id=data['public_id']).first()
+        except Exception:
+            return jsonify({'message': 'token is invalid'})
+
+        return f(current_user, *args, **kwargs)
+
+    return decorator
 
 @app.route('/')
 @cross_origin()
@@ -45,8 +105,6 @@ def register():
     '''
     Used to register a new account, expected input should come in this format \n
     {
-        "first_name": "Eiyzy",
-        "last_name": "Eusy",
         "email": "test005@test.com",
         "username": "Bee5",
         "password": "test5"
@@ -68,6 +126,7 @@ def register():
             email=email,
             username=username,
             password=generate_password_hash(password, 10),
+            public_id=str(uuid.uuid4()),
             date_created=current_time,
         )
         if user := User.query.filter_by(username=username).first():
@@ -82,9 +141,7 @@ def register():
 
         return jsonify({"success": True, "message": f"{username} created"})
     except Exception:
-        logging.exception("message")
         abort(400)
-
 
 @app.route('/login', methods=['GET', 'POST'])
 @cross_origin()
@@ -101,50 +158,49 @@ def login():
     username = body.get("username")
     password = body.get("password")
 
-    # User should be able to login with his username to access resources
+    #User should be able to login with his username to access resources
     try:
         user = User.query.filter_by(username=username).first()
-
         if not user and not check_password_hash(user.password, password):
             return ({
                 "success": False,
                 "message": "Invalid username or password"
             })
-
-        login_user(user)
-        return ({
-            "success": True,
-            "message": "Login successful"
-        })
-    except Exception:
-        logging.exception("message")
-        abort(400)
-
-
-@app.route('/logout', methods=['GET', 'POST'])
-@cross_origin()
-@login_required
-def logout():
-    '''Function to log a user out'''
-    try:
-        logout_user()
-        return ({
-            "success": True,
-            "message": "User logged out"
-        })
+        # Public_id was used so that user's details e.g username does not appear when
+        # the token is decoded.
+        token = jwt.encode(
+            {
+                'public_id': user.public_id, 'exp': datetime.now(timezone.utc) + timedelta(minutes=45)
+            }, app.config['SECRET_KEY'], "HS256"
+        )
+        print(type(token))
+        return jsonify({'token' : token})
     except Exception:
         abort(400)
+
+
+#@app.route('/logout', methods=['GET', 'POST'])
+#@cross_origin()
+#def logout():
+#    '''Function to log a user out'''
+#    try:
+#        logout_user()
+#        return ({
+#            "success": True,
+#            "message": "User logged out"
+#        })
+#    except Exception:
+#        abort(400)
 
 
 # Made this endpoint to see what is stored in the database
 # @app.route('/users', methods=['GET'])
 # @cross_origin()
-# @login_required
 # def users():
 #     try:
 #         users = User.query.all()
 #         formatted_users = [
-#             {user.date_created: user.username, "id": user.id} for user in users]
+#             {user.date_created: user.username, "id": user.public_id} for user in users]
 # 
 #         return jsonify({
 #             "success": True,
@@ -156,8 +212,8 @@ def logout():
 
 @app.route('/categories', methods=['POST'])
 @cross_origin()
-@login_required
-def new_category():
+@token_required
+def create_category(current_user):
     '''
     Function to add new category, expected input should come in this format, \n
     {
@@ -167,12 +223,15 @@ def new_category():
     body = request.get_json()
     new_name = body.get('name')
     name = new_name.lower()
-    if categories := Category.query.filter_by(name=name).first():
+
+    count = len(Category.query.all())
+
+    if categories := Category.query.filter(Category.user_id==current_user.id).filter_by(name=name).first():
         return jsonify({
             "success": False,
             "message": f"Category {name} already exists!"
         })
-    category = Category(name=name, user_id=current_user.id)
+    category = Category(name=name, user_id=current_user.id, cat_id=count+1)
     category.insert()
 
     return jsonify({
@@ -184,8 +243,8 @@ def new_category():
 # changed the create_note endpoint from '/notes.
 @app.route('/notes', methods=['POST'])
 @cross_origin()
-@login_required
-def create_note():
+@token_required
+def create_note(current_user):
     '''
     Function to create notes, expected input should come in this format \n
     {
@@ -226,8 +285,8 @@ def create_note():
 
 @app.route('/notes/<int:note_id>', methods=['GET'])
 @cross_origin()
-@login_required
-def get_note(note_id):
+@token_required
+def get_note(current_user, note_id):
     '''
         Function to get a specific note using the id
         expected response will look similar to this \n
@@ -260,8 +319,8 @@ def get_note(note_id):
 # get all notes
 @ app.route('/notes', methods=['GET'])
 @ cross_origin()
-@ login_required
-def get_notes():
+@token_required
+def get_notes(current_user):
     '''Function to view notes, expected response should return notes authorized by user eg \n
         {
             "notes": [
@@ -305,8 +364,8 @@ def get_notes():
 # get all notes by category
 @ app.route('/notes/category/<string:category>', methods=['GET'])
 @ cross_origin()
-@ login_required
-def get_notes_by_category(category):
+@token_required
+def get_notes_by_category(current_user, category):
     '''
         Function to get notes by category name, searches with given \n
         characters to return notes with category names having those characters. 
@@ -355,8 +414,8 @@ def get_notes_by_category(category):
 # Update a note by id
 @app.route('/notes/<int:note_id>', methods=['PUT', 'PATCH'])
 @cross_origin()
-@login_required
-def edit_note(note_id):
+@token_required
+def edit_note(current_user, note_id):
     '''
         Function to edit existing note, example of expected input; \n
         {
@@ -386,8 +445,8 @@ def edit_note(note_id):
 
 @app.route('/notes/<int:note_id>', methods=['DELETE'])
 @cross_origin()
-@login_required
-def delete_note(note_id):
+@token_required
+def delete_note(current_user, note_id):
     '''
         Function to delete note
     '''
@@ -405,8 +464,8 @@ def delete_note(note_id):
 
 @app.route('/tasks', methods=['POST'])
 @cross_origin()
-@login_required
-def create_task():
+@token_required
+def create_task(current_user):
     '''
         Function to create task, expected input; \n
         {
@@ -423,12 +482,15 @@ def create_task():
     start_time = body.get("start_time")
     end_time = body.get("end_time")
 
+    tasks = Task.query.filter(Task.user_id==current_user.id).all()
+    count = len(tasks)
     try:
         task = Task(
             title=title,
             content=content,
             start_time=start_time,
             end_time=end_time,
+            task_id=int(count+1),
             user_id=current_user.id,
         )
 
@@ -443,7 +505,7 @@ def create_task():
                 "success": False,
                 "message": "Please enter valid start time and time period for task"
             })
-        if start_time > end_time:
+        if start_time >= end_time:
             return jsonify({
                 "success": False,
                 "message": "Task finish time should be greater than start time"
@@ -459,8 +521,8 @@ def create_task():
 
 @app.route('/tasks', methods=['GET'])
 @cross_origin()
-@login_required
-def view_task():
+@token_required
+def view_task(current_user):
     '''
         Function to return tasks already created, expected response \n
         {
@@ -489,7 +551,7 @@ def view_task():
             match [task.start_time <= current_time, task.end_time >= current_time]:
                 case [True, False]:
                     past_tasks.append({
-                        "id": task.id,
+                        "id": task.task_id,
                         "title": task.title,
                         "description": task.content,
                         "start_time": task.start_time,
@@ -497,7 +559,7 @@ def view_task():
                     })
                 case [True, True]:
                     current_tasks.append({
-                        "id": task.id,
+                        "id": task.task_id,
                         "title": task.title,
                         "description": task.content,
                         "start_time": task.start_time,
@@ -505,7 +567,7 @@ def view_task():
                     })
                 case [False, True]:
                     upcoming_tasks.append({
-                        "id": task.id,
+                        "id": task.task_id,
                         "title": task.title,
                         "description": task.content,
                         "start_time": task.start_time,
@@ -527,8 +589,8 @@ def view_task():
 
 @app.route('/tasks/<int:task_id>', methods=['GET'])
 @cross_origin()
-@login_required
-def get_task(task_id):
+@token_required
+def get_task(current_user, task_id):
     '''
         Function to get a specific task using it's id, example of returned task \n
         {
@@ -544,10 +606,10 @@ def get_task(task_id):
     '''
     try:
         task = Task.query.join(User).filter(User.id == current_user.id).filter(
-            Task.id == task_id).one_or_none()
+            Task.task_id == task_id).one_or_none()
 
         task_data = {
-            "id": task.id,
+            "id": task.task_id,
             "title": task.title,
             "description": task.content,
             "start_time": task.start_time,
@@ -563,8 +625,8 @@ def get_task(task_id):
 
 @app.route('/tasks/<int:task_id>', methods=['PUT', 'PATCH'])
 @cross_origin()
-@login_required
-def edit_task(task_id):
+@token_required
+def edit_task(current_user, task_id):
     '''
         Function to edit already existing task, example of input \n
         {
@@ -578,13 +640,19 @@ def edit_task(task_id):
 
     try:
         task_to_update = Task.query.join(User).filter(
-            User.id == current_user.id).filter(Task.id == task_id).one_or_none()
+            User.id == current_user.id).filter(Task.task_id == task_id).one_or_none()
 
         task_to_update.title = body.get("title")
         task_to_update.content = body.get("description")
         task_to_update.start_time = body.get("start_time")
         task_to_update.end_time = body.get("end_time")
 
+        if task_to_update.start_time >= task_to_update.end_time:
+            return jsonify({
+                "success": False,
+                "message": "Task finish time should be greater than start time"
+            })
+        
         task_to_update.update()
 
         return ({
@@ -597,11 +665,11 @@ def edit_task(task_id):
 
 @app.route('/tasks/<int:task_id>', methods=['DELETE'])
 @cross_origin()
-@login_required
-def delete_task(task_id):
+@token_required
+def delete_task(current_user, task_id):
     '''Function to delete task using it's id'''
     try:
-        task = Task.query.join(User).filter(User.id==current_user.id).filter(Task.id == task_id).one_or_none()
+        task = Task.query.join(User).filter(User.id==current_user.id).filter(Task.task_id == task_id).one_or_none()
         if task is None:
             abort(404)
         else:
@@ -621,14 +689,14 @@ def bad_request(error):
     }), 400
 
 
-@app.errorhandler(401)
-@cross_origin()
-def unprocessable(error):
-    return jsonify({
-        "success": False,
-        "error": 401,
-        "message": "Unauthorized"
-    }), 401
+#@app.errorhandler(401)
+#@cross_origin()
+#def unprocessable(error):
+#    return jsonify({
+#        "success": False,
+#        "error": 401,
+#        "message": "Unauthorized"
+#    }), 401
 
 @app.errorhandler(404)
 @cross_origin()
@@ -656,3 +724,21 @@ def unprocessable(error):
         "error": 422,
         "message": "Unprocessable"
     }), 422
+
+# @app.errorhandler(500)
+# @cross_origin()
+# def special_exception_handler(error):
+#     return jsonify({
+#         "success": False,
+#         "error": 500,
+#         "message": 'Database connection failed'
+#     }), 500
+
+@app.errorhandler(AuthError)
+@cross_origin()
+def authentication_error(auth_error):
+    return jsonify({
+        "success": False,
+        "error": auth_error.status_code,
+        "message": auth_error.error
+    }), auth_error.status_code
