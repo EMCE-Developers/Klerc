@@ -127,10 +127,11 @@ Example: `curl http://127.0.0.1:5000/notes`
 }
 ```
 
+
 ### Authors
 - Celestine Okonkwo
 - Monsur Oyedeji
+- Ekemini Udongwo
 
 
 ### Acknowledgment
-
