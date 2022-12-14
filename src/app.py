@@ -21,11 +21,13 @@ CORS(app, resources={r"*/api/*": {"origins": "*"}})
 # login_manager = LoginManager()
 # login_manager.init_app(app)
 migrate = Migrate(app, db)
-current_time = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+
 logging.basicConfig(
     filename='app.log', filemode='w', format='%(levelname)s in %(module)s: %(message)s', 
     datefmt='%d-%b-%y %H:%M:%S'
 )
+
+current_time = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 
 # with app.app_context():
 #   db_drop_and_create_all()
@@ -239,11 +241,10 @@ def create_category(current_user):
 
     return jsonify({
         "success": True,
-        "message": f"Category {name} with id = {count} added successfully!"
+        "message": f"Category {name} added successfully!"
     })
 
 # create new note  "methods=['POST']"
-# changed the create_note endpoint from '/notes.
 @app.route('/notes', methods=['POST'])
 @cross_origin()
 @token_required
@@ -257,35 +258,42 @@ def create_note(current_user):
     }
     '''
     body = request.get_json()
-    title = body.get("title")
-    content = body.get("content")
-    category_id = body.get("category_id")
 
     notes = Note.query.filter(Note.user_id==current_user.id).all()
     count = len(notes)
-    try:
-        title = body.get("title")
-        content = body.get("content")
-        category_id = body.get("category_id")
+    #try:
+    title = body.get("title")
+    content = body.get("content")
+    category_name = body.get("category_name")
 
-        # add the note if previous condition is false
-        new_note = Note(
-            title=title, content=content, user_id=current_user.id,
-            note_id=count+1, category_id=category_id, date_created=current_time,
-        )
-        if title is None:
-            return ({
-                "success": False,
-                "message": "Please enter Note title"
-            })
-        new_note.insert()
+    category = Category.query.filter(Category.user_id==current_user.id).filter(
+        Category.name==category_name).one_or_none()
 
-        return jsonify({
-            "success": True,
-            "message": f"{title} created!"
+    if category is None:
+        return ({
+            "success": False,
+            "message": "Wrong category name"
         })
-    except Exception:
-        abort(400)
+
+    if title is None:
+        return ({
+            "success": False,
+            "message": "Please enter Note title"
+        })
+
+    new_note = Note(
+        title=title, content=content, user_id=current_user.id,
+        note_id=count+1, category_id=category.id, date_created=current_time,
+    )
+    
+    new_note.insert()
+
+    return jsonify({
+        "success": True,
+        "message": f"{title} created!"
+    })
+    #except Exception:
+    #    abort(400)
 
 
 @app.route('/notes/<int:note_id>', methods=['GET'])
@@ -547,46 +555,49 @@ def view_task(current_user):
     upcoming_tasks = []
     current_tasks = []
 
-    try:
-        for task in tasks:
-            
-            match [task.start_time <= current_time, task.end_time >= current_time]:
-                case [True, False]:
-                    past_tasks.append({
-                        "id": task.task_id,
-                        "title": task.title,
-                        "description": task.content,
-                        "start_time": task.start_time,
-                        "end_time": task.end_time
-                    })
-                case [True, True]:
-                    current_tasks.append({
-                        "id": task.task_id,
-                        "title": task.title,
-                        "description": task.content,
-                        "start_time": task.start_time,
-                        "end_time": task.end_time
-                    })
-                case [False, True]:
-                    upcoming_tasks.append({
-                        "id": task.task_id,
-                        "title": task.title,
-                        "description": task.content,
-                        "start_time": task.start_time,
-                        "end_time": task.end_time
-                    })
+    #try:
+    for task in tasks:
 
-        task_data = {
-            "current_tasks": current_tasks,
-            "upcoming_tasks": upcoming_tasks,
-            "past_tasks": past_tasks
-        }
-        return jsonify({
-            "success": True,
-            "tasks": task_data
+        start_time = datetime.strptime(str(task.start_time), '%d/%m/%Y %H:%M:%S')
+        end_time = datetime.strptime(str(task.end_time), '%d/%m/%Y %H:%M:%S')
+        now = datetime.now()
+        match [start_time <= now, end_time >= now]:
+            case [True, False]:
+                past_tasks.append({
+                    "id": task.task_id,
+                    "title": task.title,
+                    "description": task.content,
+                    "start_time": task.start_time,
+                    "end_time": task.end_time
+                })
+            case [True, True]:
+                current_tasks.append({
+                    "id": task.task_id,
+                    "title": task.title,
+                    "description": task.content,
+                    "start_time": task.start_time,
+                    "end_time": task.end_time
+                })
+            case [False, True]:
+                upcoming_tasks.append({
+                    "id": task.task_id,
+                    "title": task.title,
+                    "description": task.content,
+                    "start_time": task.start_time,
+                    "end_time": task.end_time
+                })
+
+    task_data = {
+        "current_tasks": current_tasks,
+        "upcoming_tasks": upcoming_tasks,
+        "past_tasks": past_tasks
+    }
+    return jsonify({
+        "success": True,
+        "tasks": task_data
         })
-    except Exception:
-        abort(400)
+    #except Exception:
+    #    abort(400)
 
 
 @app.route('/tasks/<int:task_id>', methods=['GET'])
