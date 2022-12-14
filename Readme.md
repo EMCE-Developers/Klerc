@@ -46,11 +46,86 @@ Here are some status codes;
 
 ### Endpoint Library
 
-#### GET/registration
-- General:
-    - Returns a list of categories objects, success value, and total number of categories of questions in the Klerc app.
-- Sample: `curl http://127.0.0.1:5000`
+### `GET '/'`
 
+  -Returns a success key of true
+  
+  -Request arguments: None
+  
+  
+Example: `curl http://127.0.0.1:5000/`
+```
+{
+    "success": True
+}
+```
+
+### `POST '/register'`
+
+
+  -Endpoint is used to create new users in the database.
+  
+  -Returns a success key of true and message
+  
+  -Request arguments: None
+  
+  
+Example: `curl http://127.0.0.1:5000/register -X POST -H "Content-Type: application/json" -d '{"first_name": "Eiyzy","last_name": "Eusy","email": "test005@test.com","username": "Bee5","password": "test5"}'`
+
+```
+{
+    "message": "okyouna created",
+    "success": true
+}
+```
+
+### `POST '/login'`
+
+  -Returns a success key of true and message of login successful
+  
+  -Request arguments: None
+  
+  
+Example: `curl http://127.0.0.1:5000/login -X POST -H "Content-Type: application/json" -d '{"username": "Bee5","password": "test5" }'`
+
+```
+{
+    "message": "Login successful",
+    "success": true
+}
+```
+### `POST '/logout'`
+
+  -Returns a success key of true
+  
+  -Request arguments: None
+
+  -User must be logged in first
+  
+  
+Example: `curl http://127.0.0.1:5000/logout`
+```
+{
+    "message": "User logged out",
+    "success": true
+}
+```
+
+### `POST '/notes'`
+
+  -Returns a success key of true
+  
+  -Request arguments: None
+  
+  
+Example: `curl http://127.0.0.1:5000/notes`
+
+```
+{
+    "message": "Note 2 created!",
+    "success": true
+}
+```
 
 ### Authors
 - Celestine Okonkwo
