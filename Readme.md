@@ -65,6 +65,8 @@ Example: `curl http://127.0.0.1:5000/`
 
   -Endpoint is used to create new users in the database.
   
+  -Body should contain a first_name(string), last_name(string), email(string), username(string) and password(string).
+  
   -Returns a success key of true and message
   
   -Request arguments: None
@@ -80,6 +82,8 @@ Example: `curl http://127.0.0.1:5000/register -X POST -H "Content-Type: applicat
 ```
 
 ### `POST '/login'`
+
+  -Body should contain a username(string) and password(string)
 
   -Returns a success key of true and message of login successful
   
@@ -99,8 +103,6 @@ Example: `curl http://127.0.0.1:5000/login -X POST -H "Content-Type: application
   -Returns a success key of true
   
   -Request arguments: None
-
-  -User must be logged in first
   
   
 Example: `curl http://127.0.0.1:5000/logout`
@@ -113,19 +115,116 @@ Example: `curl http://127.0.0.1:5000/logout`
 
 ### `POST '/notes'`
 
-  -Returns a success key of true
+  -Body contains content(string), title(string) and category_id(integer)
+
+  -Returns a success key of true and message
   
   -Request arguments: None
   
   
-Example: `curl http://127.0.0.1:5000/notes`
+Example: `curl http://127.0.0.1:5000/notes -X POST -H "Content-Type: application/json" -d '{"content": "Here goes your notes","title":"Note 4", "category_id":"5" }'`
 
 ```
 {
-    "message": "Note 2 created!",
+    "message": "Note 4 created!",
     "success": true
 }
 ```
+
+### `POST '/categories'`
+
+  -Body contains name(string)
+
+  -Returns a success key of true and message
+  
+  -Request arguments: None
+  
+Example: `curl http://127.0.0.1:5000/categories -X POST -H "Content-Type: application/json" -d '{"name":"category 1"}'`
+  
+```
+{
+    "message": "Category category 1 added successfully!",
+    "success": true
+}
+```
+### Skip for now its giving an error
+
+### `POST '/notes/<notes_id>'`
+
+  -Returns a success key of true and message
+  
+  -Request arguments: Notes id
+  
+  
+Example: `curl http://127.0.0.1:5000/notes/4
+
+```
+{
+    "message": "Note 4 created!",
+    "success": true
+}
+```
+
+### `GET '/notes'`
+
+  -Used to get all the notes in the database
+
+  -Returns a success key of true and a list of notes data
+  
+  -Request arguments: None
+  
+  
+Example: `curl http://127.0.0.1:5000/notes
+
+```
+{
+    "notes": {
+        "notes_data": [
+            {
+                "category_id": 1,
+                "content": "Here goes your notes",
+                "date_created": "14/12/2022 12:57:12",
+                "id": 17,
+                "title": "Note 1"
+            },
+            {
+                "category_id": 1,
+                "content": "Here goes your notes",
+                "date_created": "14/12/2022 12:57:12",
+                "id": 18,
+                "title": "Note 2"
+            },
+            {
+                "category_id": 3,
+                "content": "Here goes your notes",
+                "date_created": "15/12/2022 21:51:40",
+                "id": 19,
+                "title": "Note 4"
+            }
+        ]
+    },
+    "success": true
+}
+```
+
+### `POST '/notes/category/<category>/`
+
+  -Returns a success key of true and a list of notes data
+  
+  -Request arguments: category id
+  
+  
+Example: `curl http://127.0.0.1:5000/notes/category/Category 1
+
+```
+{
+    "notes": {
+        "notes_data": []
+    },
+    "success": true
+}
+```
+
 
 
 ### Authors
