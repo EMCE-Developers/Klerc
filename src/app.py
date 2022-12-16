@@ -366,11 +366,11 @@ def get_notes(current_user):
                     "category_id": note.category_id
                 } for note in notes)
 
-            result = note_data
-            return jsonify({
-                "success": True,
-                "notes": result
-            })
+        result = note_data
+        return jsonify({
+            "success": True,
+            "notes": result
+        })
     except Exception:
         abort(404)
 
@@ -444,7 +444,7 @@ def edit_note(current_user, note_id):
         note_to_update = Note.query.join(User).filter(User.id==current_user.id).join(
             Category, Category.id==Note.category_id).filter(
                 Note.note_id==note_id).one_or_none()
-                
+
         note_to_update.title = body.get("title")
         note_to_update.content = body.get("content")
         note_to_update.category_id = body.get("category_id")
@@ -508,22 +508,27 @@ def create_task(current_user):
             task_id=int(count+1),
             user_id=current_user.id,
         )
-
         if title is None:
             return jsonify({
                 "success": False,
                 "message": "Please enter Task title"
             })
-
         if start_time is None and end_time is None:
             return jsonify({
                 "success": False,
                 "message": "Please enter valid start time and time period for task"
             })
-        if start_time >= end_time:
+        start = datetime.strptime(start_time, '%d/%m/%Y %H:%M:%S')
+        finish = datetime.strptime(end_time, '%d/%m/%Y %H:%M:%S')
+        if start >= finish:
             return jsonify({
                 "success": False,
-                "message": "Task finish time should be greater than start time"
+                "message": "Time to complete task should be greater than start time"
+            })
+        if start < datetime.now():
+            return jsonify({
+                "success": False,
+                "message": "Task start time should be greater than current time"
             })
         task.insert()
         return ({
@@ -560,49 +565,48 @@ def view_task(current_user):
     upcoming_tasks = []
     current_tasks = []
 
-    #try:
-    for task in tasks:
+    try:
+        for task in tasks:
+            start_time = datetime.strptime(str(task.start_time), '%d/%m/%Y %H:%M:%S')
+            end_time = datetime.strptime(str(task.end_time), '%d/%m/%Y %H:%M:%S')
+            now = datetime.now()
+            match [start_time <= now, end_time >= now]:
+                case [True, False]:
+                    past_tasks.append({
+                        "id": task.task_id,
+                        "title": task.title,
+                        "description": task.content,
+                        "start_time": task.start_time,
+                        "end_time": task.end_time
+                    })
+                case [True, True]:
+                    current_tasks.append({
+                        "id": task.task_id,
+                        "title": task.title,
+                        "description": task.content,
+                        "start_time": task.start_time,
+                        "end_time": task.end_time
+                    })
+                case [False, True]:
+                    upcoming_tasks.append({
+                        "id": task.task_id,
+                        "title": task.title,
+                        "description": task.content,
+                        "start_time": task.start_time,
+                        "end_time": task.end_time
+                    })
 
-        start_time = datetime.strptime(str(task.start_time), '%d/%m/%Y %H:%M:%S')
-        end_time = datetime.strptime(str(task.end_time), '%d/%m/%Y %H:%M:%S')
-        now = datetime.now()
-        match [start_time <= now, end_time >= now]:
-            case [True, False]:
-                past_tasks.append({
-                    "id": task.task_id,
-                    "title": task.title,
-                    "description": task.content,
-                    "start_time": task.start_time,
-                    "end_time": task.end_time
-                })
-            case [True, True]:
-                current_tasks.append({
-                    "id": task.task_id,
-                    "title": task.title,
-                    "description": task.content,
-                    "start_time": task.start_time,
-                    "end_time": task.end_time
-                })
-            case [False, True]:
-                upcoming_tasks.append({
-                    "id": task.task_id,
-                    "title": task.title,
-                    "description": task.content,
-                    "start_time": task.start_time,
-                    "end_time": task.end_time
-                })
-
-    task_data = {
-        "current_tasks": current_tasks,
-        "upcoming_tasks": upcoming_tasks,
-        "past_tasks": past_tasks
-    }
-    return jsonify({
-        "success": True,
-        "tasks": task_data
-        })
-    #except Exception:
-    #    abort(400)
+        task_data = {
+            "current_tasks": current_tasks,
+            "upcoming_tasks": upcoming_tasks,
+            "past_tasks": past_tasks
+        }
+        return jsonify({
+            "success": True,
+            "tasks": task_data
+            })
+    except Exception:
+        abort(400)
 
 
 @app.route('/tasks/<int:task_id>', methods=['GET'])
