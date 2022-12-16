@@ -23,7 +23,7 @@ CORS(app, resources={r"*/api/*": {"origins": "*"}})
 migrate = Migrate(app, db)
 
 logging.basicConfig(
-    filename='app.log', filemode='w', format='%(levelname)s in %(module)s: %(message)s', 
+    filename='app.log', filemode='a', format='%(levelname)s in %(module)s: %(message)s', 
     datefmt='%d-%b-%y %H:%M:%S'
 )
 
@@ -261,39 +261,39 @@ def create_note(current_user):
 
     notes = Note.query.filter(Note.user_id==current_user.id).all()
     count = len(notes)
-    #try:
-    title = body.get("title")
-    content = body.get("content")
-    category_name = body.get("category_name")
+    try:
+        title = body.get("title")
+        content = body.get("content")
+        category_name = body.get("category_name")
 
-    category = Category.query.filter(Category.user_id==current_user.id).filter(
-        Category.name==category_name).one_or_none()
+        category = Category.query.filter(Category.user_id==current_user.id).filter(
+            Category.name==category_name).one_or_none()
 
-    if category is None:
-        return ({
-            "success": False,
-            "message": "Wrong category name"
+        if category is None:
+            return ({
+                "success": False,
+                "message": "Wrong category name"
+            })
+
+        if title is None:
+            return ({
+                "success": False,
+                "message": "Please enter Note title"
+            })
+
+        new_note = Note(
+            title=title, content=content, user_id=current_user.id,
+            note_id=count+1, category_id=category.id, date_created=current_time,
+        )
+
+        new_note.insert()
+
+        return jsonify({
+            "success": True,
+            "message": f"{title} created!"
         })
-
-    if title is None:
-        return ({
-            "success": False,
-            "message": "Please enter Note title"
-        })
-
-    new_note = Note(
-        title=title, content=content, user_id=current_user.id,
-        note_id=count+1, category_id=category.id, date_created=current_time,
-    )
-    
-    new_note.insert()
-
-    return jsonify({
-        "success": True,
-        "message": f"{title} created!"
-    })
-    #except Exception:
-    #    abort(400)
+    except Exception:
+        abort(400)
 
 
 @app.route('/notes/<int:note_id>', methods=['GET'])
@@ -312,7 +312,9 @@ def get_note(current_user, note_id):
         }
     '''
     try:
-        if note := Note.query.join(User).filter(User.id==current_user.id).filter(Note.note_id==note_id).one_or_none():
+        if note := Note.query.join(User).filter(User.id==current_user.id).join(
+            Category, Category.id==Note.category_id).filter(
+                Note.note_id==note_id).one_or_none():
         
             return jsonify({
                 "title": note.title,
@@ -354,20 +356,21 @@ def get_notes(current_user):
     '''
     note_data = []
     try:
-        notes = Note.query.join(User).filter(User.id==current_user.id).all()
+        notes = Note.query.join(User).filter(User.id==current_user.id).join(
+            Category, Category.id==Note.category_id).all()
+        for i in notes:
+            note_data.extend(
+                {
+                    "title": note.title, "content": note.content,
+                    "date_created": note.date_created, "id": note.note_id,
+                    "category_id": note.category_id
+                } for note in notes)
 
-        note_data.extend(
-            {
-                "title": note.title, "content": note.content,
-                "date_created": note.date_created, "id": note.note_id,
-                "category_id": note.category_id
-            } for note in notes)
-
-        result = note_data
-        return jsonify({
-            "success": True,
-            "notes": result
-        })
+            result = note_data
+            return jsonify({
+                "success": True,
+                "notes": result
+            })
     except Exception:
         abort(404)
 
@@ -438,8 +441,10 @@ def edit_note(current_user, note_id):
     # body includes the json body or form data field we would like to edit.
     body = request.get_json()
     try:
-        note_to_update = Note.query.join(User).filter(User.id==current_user.id).filter(Note.note_id==note_id).one_or_none()
-
+        note_to_update = Note.query.join(User).filter(User.id==current_user.id).join(
+            Category, Category.id==Note.category_id).filter(
+                Note.note_id==note_id).one_or_none()
+                
         note_to_update.title = body.get("title")
         note_to_update.content = body.get("content")
         note_to_update.category_id = body.get("category_id")
