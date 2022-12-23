@@ -81,7 +81,6 @@ def register():
     except Exception:
         abort(400)
 
-
 @app.route('/login', methods=['POST'])
 @cross_origin()
 def login():
@@ -144,6 +143,29 @@ def logout():
 #         })
 #     except Exception:
 #         abort(401)
+
+
+@ app.route('/categories', methods=['GET'])
+@ cross_origin()
+@ login_required
+def get_categories():
+    '''Function to view categories'''
+    category_data = []
+    try:
+        categories = Category.query.all()
+
+        category_data.extend(
+            {
+                "name": category.name,
+                "id": category.id
+            } for category in categories)
+
+        return jsonify({
+            "success": True,
+            "categories": category_data
+        })
+    except Exception:
+        abort(404)
 
 
 @app.route('/categories', methods=['POST'])
