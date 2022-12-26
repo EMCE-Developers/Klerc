@@ -227,6 +227,24 @@ Example: `curl http://127.0.0.1:5000/notes/category/Category 1
 ```
 
 
+### `PUT/PATCH '/notes/<note id>/`
+
+  -Returns a success key of true and a list of notes data
+  
+  -Request arguments: category id
+  
+  
+Example: `curl http://127.0.0.1:5000/notes/category/Category 1
+
+```
+{
+    "notes": {
+        "notes_data": []
+    },
+    "success": true
+}
+```
+
 
 ### Authors
 - Celestine Okonkwo
