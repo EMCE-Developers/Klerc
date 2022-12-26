@@ -148,7 +148,8 @@ def register():
     except Exception:
         abort(400)
 
-@app.route('/login', methods=['GET', 'POST'])
+
+@app.route('/login', methods=['POST'])
 @cross_origin()
 def login():
     '''
