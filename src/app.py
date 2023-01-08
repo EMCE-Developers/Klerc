@@ -166,7 +166,6 @@ def register():
     except Exception:
         abort(400)
 
-
 @app.route('/login', methods=['POST'])
 @cross_origin()
 def login():
@@ -233,7 +232,7 @@ def login():
 #         abort(401)
 
 
-@app.route('/categories', methods=['GET', 'POST'])
+@app.route('/categories', methods=['GET','POST'])
 @cross_origin()
 @token_required
 def create_category(current_user):
