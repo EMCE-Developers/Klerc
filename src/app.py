@@ -392,7 +392,7 @@ def get_notes(current_user):
             Category, Category.id == Note.category_id).all()
         notes = paginate_items(request, query)
 
-        note_data = [note for note in notes]
+        note_data = list(notes)
 
         not len(note_data) and abort(404)
 
