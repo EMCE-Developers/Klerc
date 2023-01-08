@@ -109,6 +109,19 @@ def index():
     })
 
 
+def paginate_items(request, selection):
+    page = request.args.get("page", 1, type=int)
+    page_size = request.args.get("page_size", 2, type=int)
+
+    page_start = (page - 1) * page_size
+    page_end = page_start + page_size
+
+    items = [item.format() for item in selection]
+    current_item = items[page_start:page_end]
+
+    return current_item
+
+
 @app.route('/register', methods=['POST'])
 @cross_origin()
 def register():
@@ -231,11 +244,12 @@ def create_category(current_user):
     }
     '''
     if request.method == 'GET':
-        cats = [cat.name for cat in Category.query.filter(
+        cats = [cat.name.format() for cat in Category.query.filter(
             Category.user_id == current_user.id).all()]
+
         return {
             "success": True,
-            "categories": cats,
+            "categories": paginate_items(request, cats),
             "total": len(cats)
         }
 
@@ -272,7 +286,7 @@ def create_note(current_user):
     {
     "title": "Note 1",
     "content": "Here goes your notes",
-    "category_id": 1
+    "category_name": "sport"
     }
     '''
     body = request.get_json()
@@ -372,22 +386,22 @@ def get_notes(current_user):
             ]
         }
     '''
-    note_data = []
+
     try:
-        notes = Note.query.join(User).filter(User.id == current_user.id).join(
+        query = Note.query.join(User).filter(User.id == current_user.id).join(
             Category, Category.id == Note.category_id).all()
-        for i in notes:
-            note_data.extend(
-                {
-                    "title": note.title, "content": note.content,
-                    "date_created": note.date_created, "id": note.note_id,
-                    "category_id": note.category_id
-                } for note in notes)
+        notes = paginate_items(request, query)
+
+        note_data = [note for note in notes]
+
+        not len(note_data) and abort(404)
 
         result = note_data
+
         return jsonify({
             "success": True,
-            "notes": result
+            "notes":  result,
+            "total": len(query)
         })
     except Exception:
         abort(404)
@@ -617,11 +631,11 @@ def view_task(current_user):
                         "start_time": task.start_time,
                         "end_time": task.end_time
                     })
-
+        print(past_tasks)
         task_data = {
-            "current_tasks": current_tasks,
+            "current_tasks": paginate_items(request, current_tasks),
             "upcoming_tasks": upcoming_tasks,
-            "past_tasks": past_tasks
+            "past_tasks": paginate_items(request, past_tasks)
         }
         return jsonify({
             "success": True,
