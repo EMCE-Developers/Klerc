@@ -71,11 +71,9 @@ class Note(db.Model):
 
     def format(self):
         return {
-            'note_id': self.note_id,
             'title': self.title,
             'content': self.content,
             'category_id': self.category_id,
-            'user_id': self.user_id,
             'date_created': self.date_created,
         }
 
@@ -142,6 +140,7 @@ class Task(db.Model):
     def format(self):
         return {
             'task_id': self.task_id,
+            'id': self.id,
             'title': self.title,
             'content': self.content,
             'user_id': self.user_id,

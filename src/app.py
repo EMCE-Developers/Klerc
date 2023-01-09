@@ -111,7 +111,7 @@ def index():
 
 def paginate_items(request, selection):
     page = request.args.get("page", 1, type=int)
-    page_size = request.args.get("page_size", 2, type=int)
+    page_size = request.args.get("page_size", 5, type=int)
 
     page_start = (page - 1) * page_size
     page_end = page_start + page_size
@@ -120,6 +120,27 @@ def paginate_items(request, selection):
     current_item = items[page_start:page_end]
 
     return current_item
+
+
+def handle_category_param(request, selection, current_user):
+    cat_query = request.args.get('category', '',  type=str)
+
+    if cat_query:
+        cats = Category.query.join(User).filter(
+            User.id == current_user.id).filter(Category.name == cat_query).all()
+
+        cat_id = None
+        if len(cats) > 0:
+            cat_id = [cat.id for cat in cats][0]
+
+        result = []
+
+        for note in selection:
+            if note.category_id == cat_id:
+                result.append(note)
+        final = (paginate_items(request, result), len(result))
+
+        return final
 
 
 @app.route('/register', methods=['POST'])
@@ -368,6 +389,7 @@ def get_note(current_user, note_id):
 def get_notes(current_user):
     '''Function to view notes, expected response should return notes authorized by user eg \n
         {
+            "current list": 2,
             "notes": [
                 {
                     "category_id": 2,
@@ -383,13 +405,26 @@ def get_notes(current_user):
                     "id": 15,
                     "title": "Tasks and Notes by Larawwaaaaaa"
                 },
-            ]
+            ],
+            "success": true,
+            "total": 11
         }
     '''
-
+    cat_query = request.args.get('category', '',  type=str)
     try:
         query = Note.query.join(User).filter(User.id == current_user.id).join(
             Category, Category.id == Note.category_id).all()
+        if cat_query:
+            (value, total) = handle_category_param(
+                request, query, current_user)
+
+            return {
+                "success": True,
+                "notes":  value,
+                "current list": len(value),
+                "total": total
+            }
+
         notes = paginate_items(request, query)
 
         note_data = [note for note in notes]
@@ -594,7 +629,8 @@ def view_task(current_user):
                     },
                 ]
     '''
-    tasks = Task.query.join(User).filter(User.id == int(current_user.id)).all()
+    query = Task.query.join(User).filter(User.id == int(current_user.id)).all()
+    tasks = paginate_items(request, query)
     past_tasks = []
     upcoming_tasks = []
     current_tasks = []
@@ -615,6 +651,7 @@ def view_task(current_user):
                         "start_time": task.start_time,
                         "end_time": task.end_time
                     })
+                    # past_tasks.append(task.format())
                 case [True, True]:
                     current_tasks.append({
                         "id": task.task_id,
@@ -633,9 +670,9 @@ def view_task(current_user):
                     })
         print(past_tasks)
         task_data = {
-            "current_tasks": paginate_items(request, current_tasks),
+            "current_tasks": current_tasks,
             "upcoming_tasks": upcoming_tasks,
-            "past_tasks": paginate_items(request, past_tasks)
+            "past_tasks": past_tasks
         }
         return jsonify({
             "success": True,

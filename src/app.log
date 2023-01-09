@@ -1,29 +1,4 @@
-INFO in _internal: [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
- * Running on http://127.0.0.1:5000
-INFO in _internal: [33mPress CTRL+C to quit[0m
-INFO in _internal:  * Restarting with stat
-INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
-INFO in _internal:  * Restarting with stat
-INFO in _internal: 127.0.0.1 - - [08/Jan/2023 08:37:08] "POST /login HTTP/1.1" 200 -
-INFO in _internal: 127.0.0.1 - - [08/Jan/2023 08:37:30] "GET /notes HTTP/1.1" 200 -
-INFO in _internal: 127.0.0.1 - - [08/Jan/2023 08:37:44] "GET /notes HTTP/1.1" 200 -
-INFO in _internal: 127.0.0.1 - - [08/Jan/2023 08:37:58] "GET /categories HTTP/1.1" 200 -
-INFO in _internal: 127.0.0.1 - - [08/Jan/2023 08:38:01] "GET /categories HTTP/1.1" 200 -
-INFO in _internal: 127.0.0.1 - - [08/Jan/2023 08:38:09] "GET /categories HTTP/1.1" 200 -
-INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
-INFO in _internal:  * Restarting with stat
-INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\database\\models.py', reloading
-INFO in _internal:  * Restarting with stat
-INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\database\\models.py', reloading
-INFO in _internal:  * Restarting with stat
-INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
-INFO in _internal:  * Restarting with stat
-INFO in _internal: 127.0.0.1 - - [08/Jan/2023 08:43:05] "GET /categories HTTP/1.1" 200 -
-INFO in _internal: 127.0.0.1 - - [08/Jan/2023 08:43:08] "GET /categories HTTP/1.1" 200 -
-INFO in _internal: 127.0.0.1 - - [08/Jan/2023 08:43:10] "GET /categories HTTP/1.1" 200 -
-INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
-INFO in _internal:  * Restarting with stat
-ERROR in app: Exception on /categories [GET]
+ERROR in app: Exception on /notes [GET]
 Traceback (most recent call last):
   File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 2525, in wsgi_app
     response = self.full_dispatch_request()
@@ -39,9 +14,9 @@ Traceback (most recent call last):
     resp = make_response(f(*args, **kwargs))
   File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\src\app.py", line 99, in decorator
     return f(current_user, *args, **kwargs)
-  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\src\app.py", line 251, in create_category
-    cats = paginate_items(catss)
-TypeError: paginate_items() missing 1 required positional argument: 'selection'
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\src\app.py", line 399, in get_notes
+    result.extend(note)
+TypeError: 'Note' object is not iterable
 ERROR in app: Request finalizing failed with an error while handling an error
 Traceback (most recent call last):
   File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 2525, in wsgi_app
@@ -58,9 +33,9 @@ Traceback (most recent call last):
     resp = make_response(f(*args, **kwargs))
   File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\src\app.py", line 99, in decorator
     return f(current_user, *args, **kwargs)
-  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\src\app.py", line 251, in create_category
-    cats = paginate_items(catss)
-TypeError: paginate_items() missing 1 required positional argument: 'selection'
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\src\app.py", line 399, in get_notes
+    result.extend(note)
+TypeError: 'Note' object is not iterable
 
 During handling of the above exception, another exception occurred:
 
@@ -86,7 +61,7 @@ Traceback (most recent call last):
   File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\sre_parse.py", line 669, in _parse
     raise source.error("nothing to repeat",
 re.error: nothing to repeat at position 0
-INFO in _internal: 127.0.0.1 - - [08/Jan/2023 08:43:40] "[35m[1mGET /categories HTTP/1.1[0m" 500 -
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 10:54:32] "[35m[1mGET /notes?category=sport HTTP/1.1[0m" 500 -
 ERROR in _internal: Error on request:
 Traceback (most recent call last):
   File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 2525, in wsgi_app
@@ -103,9 +78,9 @@ Traceback (most recent call last):
     resp = make_response(f(*args, **kwargs))
   File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\src\app.py", line 99, in decorator
     return f(current_user, *args, **kwargs)
-  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\src\app.py", line 251, in create_category
-    cats = paginate_items(catss)
-TypeError: paginate_items() missing 1 required positional argument: 'selection'
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\src\app.py", line 399, in get_notes
+    result.extend(note)
+TypeError: 'Note' object is not iterable
 
 During handling of the above exception, another exception occurred:
 
@@ -139,164 +114,1117 @@ Traceback (most recent call last):
 re.error: nothing to repeat at position 0
 INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
 INFO in _internal:  * Restarting with stat
-INFO in _internal: 127.0.0.1 - - [08/Jan/2023 08:44:38] "GET /categories HTTP/1.1" 200 -
+INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
+INFO in _internal:  * Restarting with stat
+INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
+INFO in _internal:  * Restarting with stat
+INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
+INFO in _internal:  * Restarting with stat
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 11:01:38] "GET /notes?category=sport HTTP/1.1" 200 -
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 11:01:46] "POST /login HTTP/1.1" 200 -
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 11:02:08] "GET /notes?category=sport HTTP/1.1" 200 -
+INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
+INFO in _internal:  * Restarting with stat
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 11:05:32] "GET /notes?category=sport HTTP/1.1" 200 -
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 11:05:37] "GET /notes?category=sport HTTP/1.1" 200 -
+ERROR in app: Exception on /notes [GET]
+Traceback (most recent call last):
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 2525, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 1822, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask_cors\extension.py", line 165, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 1820, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 1796, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask_cors\decorator.py", line 128, in wrapped_function
+    resp = make_response(f(*args, **kwargs))
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\src\app.py", line 99, in decorator
+    return f(current_user, *args, **kwargs)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\src\app.py", line 393, in get_notes
+    cat_id = [cat.id for cat in cats][0]
+IndexError: list index out of range
+ERROR in app: Request finalizing failed with an error while handling an error
+Traceback (most recent call last):
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 2525, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 1822, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask_cors\extension.py", line 165, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 1820, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 1796, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask_cors\decorator.py", line 128, in wrapped_function
+    resp = make_response(f(*args, **kwargs))
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\src\app.py", line 99, in decorator
+    return f(current_user, *args, **kwargs)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\src\app.py", line 393, in get_notes
+    cat_id = [cat.id for cat in cats][0]
+IndexError: list index out of range
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 1844, in finalize_request
+    response = self.process_response(response)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 2337, in process_response
+    response = self.ensure_sync(func)(response)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask_cors\extension.py", line 182, in cors_after_request
+    if try_match(normalized_path, res_regex):
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask_cors\core.py", line 280, in try_match
+    return re.match(maybe_regex, request_origin, flags=re.IGNORECASE)
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\re.py", line 190, in match
+    return _compile(pattern, flags).match(string)
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\re.py", line 303, in _compile
+    p = sre_compile.compile(pattern, flags)
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\sre_compile.py", line 788, in compile
+    p = sre_parse.parse(p, flags)
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\sre_parse.py", line 955, in parse
+    p = _parse_sub(source, state, flags & SRE_FLAG_VERBOSE, 0)
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\sre_parse.py", line 444, in _parse_sub
+    itemsappend(_parse(source, state, verbose, nested + 1,
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\sre_parse.py", line 669, in _parse
+    raise source.error("nothing to repeat",
+re.error: nothing to repeat at position 0
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 11:06:07] "[35m[1mGET /notes?category=live HTTP/1.1[0m" 500 -
+ERROR in _internal: Error on request:
+Traceback (most recent call last):
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 2525, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 1822, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask_cors\extension.py", line 165, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 1820, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 1796, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask_cors\decorator.py", line 128, in wrapped_function
+    resp = make_response(f(*args, **kwargs))
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\src\app.py", line 99, in decorator
+    return f(current_user, *args, **kwargs)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\src\app.py", line 393, in get_notes
+    cat_id = [cat.id for cat in cats][0]
+IndexError: list index out of range
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\werkzeug\serving.py", line 335, in run_wsgi
+    execute(self.server.app)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\werkzeug\serving.py", line 322, in execute
+    application_iter = app(environ, start_response)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 2548, in __call__
+    return self.wsgi_app(environ, start_response)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 2528, in wsgi_app
+    response = self.handle_exception(e)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask_cors\extension.py", line 165, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask_cors\extension.py", line 182, in cors_after_request
+    if try_match(normalized_path, res_regex):
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask_cors\core.py", line 280, in try_match
+    return re.match(maybe_regex, request_origin, flags=re.IGNORECASE)
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\re.py", line 190, in match
+    return _compile(pattern, flags).match(string)
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\re.py", line 303, in _compile
+    p = sre_compile.compile(pattern, flags)
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\sre_compile.py", line 788, in compile
+    p = sre_parse.parse(p, flags)
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\sre_parse.py", line 955, in parse
+    p = _parse_sub(source, state, flags & SRE_FLAG_VERBOSE, 0)
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\sre_parse.py", line 444, in _parse_sub
+    itemsappend(_parse(source, state, verbose, nested + 1,
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\sre_parse.py", line 669, in _parse
+    raise source.error("nothing to repeat",
+re.error: nothing to repeat at position 0
+INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
+INFO in _internal:  * Restarting with stat
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 11:06:37] "GET /notes?category=sport HTTP/1.1" 200 -
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 11:06:54] "GET /notes?category=sport HTTP/1.1" 200 -
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 11:06:55] "GET /notes?category=sport HTTP/1.1" 200 -
+INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
+INFO in _internal:  * Restarting with stat
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 11:07:19] "GET /notes?category=sport HTTP/1.1" 200 -
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 11:07:22] "GET /notes?category=sport HTTP/1.1" 200 -
+INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
+INFO in _internal:  * Restarting with stat
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 11:09:11] "GET /notes?category=sport HTTP/1.1" 200 -
+ERROR in app: Exception on /notes [GET]
+Traceback (most recent call last):
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 2525, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 1822, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask_cors\extension.py", line 165, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 1820, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 1796, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask_cors\decorator.py", line 128, in wrapped_function
+    resp = make_response(f(*args, **kwargs))
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\src\app.py", line 99, in decorator
+    return f(current_user, *args, **kwargs)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\src\app.py", line 393, in get_notes
+    cat_id = [cat.id for cat in cats][0]
+IndexError: list index out of range
+ERROR in app: Request finalizing failed with an error while handling an error
+Traceback (most recent call last):
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 2525, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 1822, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask_cors\extension.py", line 165, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 1820, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 1796, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask_cors\decorator.py", line 128, in wrapped_function
+    resp = make_response(f(*args, **kwargs))
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\src\app.py", line 99, in decorator
+    return f(current_user, *args, **kwargs)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\src\app.py", line 393, in get_notes
+    cat_id = [cat.id for cat in cats][0]
+IndexError: list index out of range
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 1844, in finalize_request
+    response = self.process_response(response)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 2337, in process_response
+    response = self.ensure_sync(func)(response)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask_cors\extension.py", line 182, in cors_after_request
+    if try_match(normalized_path, res_regex):
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask_cors\core.py", line 280, in try_match
+    return re.match(maybe_regex, request_origin, flags=re.IGNORECASE)
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\re.py", line 190, in match
+    return _compile(pattern, flags).match(string)
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\re.py", line 303, in _compile
+    p = sre_compile.compile(pattern, flags)
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\sre_compile.py", line 788, in compile
+    p = sre_parse.parse(p, flags)
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\sre_parse.py", line 955, in parse
+    p = _parse_sub(source, state, flags & SRE_FLAG_VERBOSE, 0)
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\sre_parse.py", line 444, in _parse_sub
+    itemsappend(_parse(source, state, verbose, nested + 1,
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\sre_parse.py", line 669, in _parse
+    raise source.error("nothing to repeat",
+re.error: nothing to repeat at position 0
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 11:09:18] "[35m[1mGET /notes?category=lo HTTP/1.1[0m" 500 -
+ERROR in _internal: Error on request:
+Traceback (most recent call last):
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 2525, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 1822, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask_cors\extension.py", line 165, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 1820, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 1796, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask_cors\decorator.py", line 128, in wrapped_function
+    resp = make_response(f(*args, **kwargs))
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\src\app.py", line 99, in decorator
+    return f(current_user, *args, **kwargs)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\src\app.py", line 393, in get_notes
+    cat_id = [cat.id for cat in cats][0]
+IndexError: list index out of range
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\werkzeug\serving.py", line 335, in run_wsgi
+    execute(self.server.app)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\werkzeug\serving.py", line 322, in execute
+    application_iter = app(environ, start_response)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 2548, in __call__
+    return self.wsgi_app(environ, start_response)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 2528, in wsgi_app
+    response = self.handle_exception(e)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask_cors\extension.py", line 165, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask_cors\extension.py", line 182, in cors_after_request
+    if try_match(normalized_path, res_regex):
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask_cors\core.py", line 280, in try_match
+    return re.match(maybe_regex, request_origin, flags=re.IGNORECASE)
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\re.py", line 190, in match
+    return _compile(pattern, flags).match(string)
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\re.py", line 303, in _compile
+    p = sre_compile.compile(pattern, flags)
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\sre_compile.py", line 788, in compile
+    p = sre_parse.parse(p, flags)
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\sre_parse.py", line 955, in parse
+    p = _parse_sub(source, state, flags & SRE_FLAG_VERBOSE, 0)
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\sre_parse.py", line 444, in _parse_sub
+    itemsappend(_parse(source, state, verbose, nested + 1,
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\sre_parse.py", line 669, in _parse
+    raise source.error("nothing to repeat",
+re.error: nothing to repeat at position 0
+INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
+INFO in _internal:  * Restarting with stat
+ERROR in app: Exception on /notes [GET]
+Traceback (most recent call last):
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 2525, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 1822, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask_cors\extension.py", line 165, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 1820, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 1796, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask_cors\decorator.py", line 128, in wrapped_function
+    resp = make_response(f(*args, **kwargs))
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\src\app.py", line 99, in decorator
+    return f(current_user, *args, **kwargs)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\src\app.py", line 393, in get_notes
+    cat_id = [cat.id for cat in cats][0]
+IndexError: list index out of range
+ERROR in app: Request finalizing failed with an error while handling an error
+Traceback (most recent call last):
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 2525, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 1822, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask_cors\extension.py", line 165, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 1820, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 1796, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask_cors\decorator.py", line 128, in wrapped_function
+    resp = make_response(f(*args, **kwargs))
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\src\app.py", line 99, in decorator
+    return f(current_user, *args, **kwargs)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\src\app.py", line 393, in get_notes
+    cat_id = [cat.id for cat in cats][0]
+IndexError: list index out of range
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 1844, in finalize_request
+    response = self.process_response(response)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 2337, in process_response
+    response = self.ensure_sync(func)(response)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask_cors\extension.py", line 182, in cors_after_request
+    if try_match(normalized_path, res_regex):
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask_cors\core.py", line 280, in try_match
+    return re.match(maybe_regex, request_origin, flags=re.IGNORECASE)
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\re.py", line 190, in match
+    return _compile(pattern, flags).match(string)
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\re.py", line 303, in _compile
+    p = sre_compile.compile(pattern, flags)
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\sre_compile.py", line 788, in compile
+    p = sre_parse.parse(p, flags)
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\sre_parse.py", line 955, in parse
+    p = _parse_sub(source, state, flags & SRE_FLAG_VERBOSE, 0)
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\sre_parse.py", line 444, in _parse_sub
+    itemsappend(_parse(source, state, verbose, nested + 1,
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\sre_parse.py", line 669, in _parse
+    raise source.error("nothing to repeat",
+re.error: nothing to repeat at position 0
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 11:10:56] "[35m[1mGET /notes?category=lo HTTP/1.1[0m" 500 -
+ERROR in _internal: Error on request:
+Traceback (most recent call last):
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 2525, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 1822, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask_cors\extension.py", line 165, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 1820, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 1796, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask_cors\decorator.py", line 128, in wrapped_function
+    resp = make_response(f(*args, **kwargs))
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\src\app.py", line 99, in decorator
+    return f(current_user, *args, **kwargs)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\src\app.py", line 393, in get_notes
+    cat_id = [cat.id for cat in cats][0]
+IndexError: list index out of range
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\werkzeug\serving.py", line 335, in run_wsgi
+    execute(self.server.app)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\werkzeug\serving.py", line 322, in execute
+    application_iter = app(environ, start_response)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 2548, in __call__
+    return self.wsgi_app(environ, start_response)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 2528, in wsgi_app
+    response = self.handle_exception(e)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask_cors\extension.py", line 165, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask_cors\extension.py", line 182, in cors_after_request
+    if try_match(normalized_path, res_regex):
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask_cors\core.py", line 280, in try_match
+    return re.match(maybe_regex, request_origin, flags=re.IGNORECASE)
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\re.py", line 190, in match
+    return _compile(pattern, flags).match(string)
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\re.py", line 303, in _compile
+    p = sre_compile.compile(pattern, flags)
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\sre_compile.py", line 788, in compile
+    p = sre_parse.parse(p, flags)
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\sre_parse.py", line 955, in parse
+    p = _parse_sub(source, state, flags & SRE_FLAG_VERBOSE, 0)
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\sre_parse.py", line 444, in _parse_sub
+    itemsappend(_parse(source, state, verbose, nested + 1,
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\sre_parse.py", line 669, in _parse
+    raise source.error("nothing to repeat",
+re.error: nothing to repeat at position 0
+ERROR in app: Exception on /notes [GET]
+Traceback (most recent call last):
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 2525, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 1822, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask_cors\extension.py", line 165, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 1820, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 1796, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask_cors\decorator.py", line 128, in wrapped_function
+    resp = make_response(f(*args, **kwargs))
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\src\app.py", line 99, in decorator
+    return f(current_user, *args, **kwargs)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\src\app.py", line 393, in get_notes
+    cat_id = [cat.id for cat in cats][0]
+IndexError: list index out of range
+ERROR in app: Request finalizing failed with an error while handling an error
+Traceback (most recent call last):
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 2525, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 1822, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask_cors\extension.py", line 165, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 1820, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 1796, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask_cors\decorator.py", line 128, in wrapped_function
+    resp = make_response(f(*args, **kwargs))
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\src\app.py", line 99, in decorator
+    return f(current_user, *args, **kwargs)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\src\app.py", line 393, in get_notes
+    cat_id = [cat.id for cat in cats][0]
+IndexError: list index out of range
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 1844, in finalize_request
+    response = self.process_response(response)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 2337, in process_response
+    response = self.ensure_sync(func)(response)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask_cors\extension.py", line 182, in cors_after_request
+    if try_match(normalized_path, res_regex):
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask_cors\core.py", line 280, in try_match
+    return re.match(maybe_regex, request_origin, flags=re.IGNORECASE)
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\re.py", line 190, in match
+    return _compile(pattern, flags).match(string)
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\re.py", line 303, in _compile
+    p = sre_compile.compile(pattern, flags)
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\sre_compile.py", line 788, in compile
+    p = sre_parse.parse(p, flags)
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\sre_parse.py", line 955, in parse
+    p = _parse_sub(source, state, flags & SRE_FLAG_VERBOSE, 0)
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\sre_parse.py", line 444, in _parse_sub
+    itemsappend(_parse(source, state, verbose, nested + 1,
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\sre_parse.py", line 669, in _parse
+    raise source.error("nothing to repeat",
+re.error: nothing to repeat at position 0
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 11:10:59] "[35m[1mGET /notes?category=lo HTTP/1.1[0m" 500 -
+ERROR in _internal: Error on request:
+Traceback (most recent call last):
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 2525, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 1822, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask_cors\extension.py", line 165, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 1820, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 1796, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask_cors\decorator.py", line 128, in wrapped_function
+    resp = make_response(f(*args, **kwargs))
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\src\app.py", line 99, in decorator
+    return f(current_user, *args, **kwargs)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\src\app.py", line 393, in get_notes
+    cat_id = [cat.id for cat in cats][0]
+IndexError: list index out of range
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\werkzeug\serving.py", line 335, in run_wsgi
+    execute(self.server.app)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\werkzeug\serving.py", line 322, in execute
+    application_iter = app(environ, start_response)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 2548, in __call__
+    return self.wsgi_app(environ, start_response)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 2528, in wsgi_app
+    response = self.handle_exception(e)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask_cors\extension.py", line 165, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask_cors\extension.py", line 182, in cors_after_request
+    if try_match(normalized_path, res_regex):
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask_cors\core.py", line 280, in try_match
+    return re.match(maybe_regex, request_origin, flags=re.IGNORECASE)
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\re.py", line 190, in match
+    return _compile(pattern, flags).match(string)
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\re.py", line 303, in _compile
+    p = sre_compile.compile(pattern, flags)
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\sre_compile.py", line 788, in compile
+    p = sre_parse.parse(p, flags)
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\sre_parse.py", line 955, in parse
+    p = _parse_sub(source, state, flags & SRE_FLAG_VERBOSE, 0)
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\sre_parse.py", line 444, in _parse_sub
+    itemsappend(_parse(source, state, verbose, nested + 1,
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\sre_parse.py", line 669, in _parse
+    raise source.error("nothing to repeat",
+re.error: nothing to repeat at position 0
+INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
+INFO in _internal:  * Restarting with stat
+INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
+INFO in _internal:  * Restarting with stat
+INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
+INFO in _internal:  * Restarting with stat
+ERROR in app: Exception on /notes [GET]
+Traceback (most recent call last):
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 2525, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 1822, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask_cors\extension.py", line 165, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 1820, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 1796, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask_cors\decorator.py", line 128, in wrapped_function
+    resp = make_response(f(*args, **kwargs))
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\src\app.py", line 99, in decorator
+    return f(current_user, *args, **kwargs)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\src\app.py", line 395, in get_notes
+    if cats.length > 0:
+AttributeError: 'list' object has no attribute 'length'
+ERROR in app: Request finalizing failed with an error while handling an error
+Traceback (most recent call last):
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 2525, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 1822, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask_cors\extension.py", line 165, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 1820, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 1796, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask_cors\decorator.py", line 128, in wrapped_function
+    resp = make_response(f(*args, **kwargs))
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\src\app.py", line 99, in decorator
+    return f(current_user, *args, **kwargs)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\src\app.py", line 395, in get_notes
+    if cats.length > 0:
+AttributeError: 'list' object has no attribute 'length'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 1844, in finalize_request
+    response = self.process_response(response)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 2337, in process_response
+    response = self.ensure_sync(func)(response)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask_cors\extension.py", line 182, in cors_after_request
+    if try_match(normalized_path, res_regex):
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask_cors\core.py", line 280, in try_match
+    return re.match(maybe_regex, request_origin, flags=re.IGNORECASE)
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\re.py", line 190, in match
+    return _compile(pattern, flags).match(string)
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\re.py", line 303, in _compile
+    p = sre_compile.compile(pattern, flags)
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\sre_compile.py", line 788, in compile
+    p = sre_parse.parse(p, flags)
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\sre_parse.py", line 955, in parse
+    p = _parse_sub(source, state, flags & SRE_FLAG_VERBOSE, 0)
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\sre_parse.py", line 444, in _parse_sub
+    itemsappend(_parse(source, state, verbose, nested + 1,
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\sre_parse.py", line 669, in _parse
+    raise source.error("nothing to repeat",
+re.error: nothing to repeat at position 0
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 11:19:02] "[35m[1mGET /notes?category=sport HTTP/1.1[0m" 500 -
+ERROR in _internal: Error on request:
+Traceback (most recent call last):
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 2525, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 1822, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask_cors\extension.py", line 165, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 1820, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 1796, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask_cors\decorator.py", line 128, in wrapped_function
+    resp = make_response(f(*args, **kwargs))
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\src\app.py", line 99, in decorator
+    return f(current_user, *args, **kwargs)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\src\app.py", line 395, in get_notes
+    if cats.length > 0:
+AttributeError: 'list' object has no attribute 'length'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\werkzeug\serving.py", line 335, in run_wsgi
+    execute(self.server.app)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\werkzeug\serving.py", line 322, in execute
+    application_iter = app(environ, start_response)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 2548, in __call__
+    return self.wsgi_app(environ, start_response)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 2528, in wsgi_app
+    response = self.handle_exception(e)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask_cors\extension.py", line 165, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask_cors\extension.py", line 182, in cors_after_request
+    if try_match(normalized_path, res_regex):
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask_cors\core.py", line 280, in try_match
+    return re.match(maybe_regex, request_origin, flags=re.IGNORECASE)
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\re.py", line 190, in match
+    return _compile(pattern, flags).match(string)
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\re.py", line 303, in _compile
+    p = sre_compile.compile(pattern, flags)
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\sre_compile.py", line 788, in compile
+    p = sre_parse.parse(p, flags)
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\sre_parse.py", line 955, in parse
+    p = _parse_sub(source, state, flags & SRE_FLAG_VERBOSE, 0)
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\sre_parse.py", line 444, in _parse_sub
+    itemsappend(_parse(source, state, verbose, nested + 1,
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\sre_parse.py", line 669, in _parse
+    raise source.error("nothing to repeat",
+re.error: nothing to repeat at position 0
+ERROR in app: Exception on /notes [GET]
+Traceback (most recent call last):
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 2525, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 1822, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask_cors\extension.py", line 165, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 1820, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 1796, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask_cors\decorator.py", line 128, in wrapped_function
+    resp = make_response(f(*args, **kwargs))
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\src\app.py", line 99, in decorator
+    return f(current_user, *args, **kwargs)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\src\app.py", line 395, in get_notes
+    if cats.length > 0:
+AttributeError: 'list' object has no attribute 'length'
+ERROR in app: Request finalizing failed with an error while handling an error
+Traceback (most recent call last):
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 2525, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 1822, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask_cors\extension.py", line 165, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 1820, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 1796, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask_cors\decorator.py", line 128, in wrapped_function
+    resp = make_response(f(*args, **kwargs))
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\src\app.py", line 99, in decorator
+    return f(current_user, *args, **kwargs)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\src\app.py", line 395, in get_notes
+    if cats.length > 0:
+AttributeError: 'list' object has no attribute 'length'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 1844, in finalize_request
+    response = self.process_response(response)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 2337, in process_response
+    response = self.ensure_sync(func)(response)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask_cors\extension.py", line 182, in cors_after_request
+    if try_match(normalized_path, res_regex):
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask_cors\core.py", line 280, in try_match
+    return re.match(maybe_regex, request_origin, flags=re.IGNORECASE)
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\re.py", line 190, in match
+    return _compile(pattern, flags).match(string)
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\re.py", line 303, in _compile
+    p = sre_compile.compile(pattern, flags)
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\sre_compile.py", line 788, in compile
+    p = sre_parse.parse(p, flags)
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\sre_parse.py", line 955, in parse
+    p = _parse_sub(source, state, flags & SRE_FLAG_VERBOSE, 0)
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\sre_parse.py", line 444, in _parse_sub
+    itemsappend(_parse(source, state, verbose, nested + 1,
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\sre_parse.py", line 669, in _parse
+    raise source.error("nothing to repeat",
+re.error: nothing to repeat at position 0
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 11:19:05] "[35m[1mGET /notes?category=sport HTTP/1.1[0m" 500 -
+ERROR in _internal: Error on request:
+Traceback (most recent call last):
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 2525, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 1822, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask_cors\extension.py", line 165, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 1820, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 1796, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask_cors\decorator.py", line 128, in wrapped_function
+    resp = make_response(f(*args, **kwargs))
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\src\app.py", line 99, in decorator
+    return f(current_user, *args, **kwargs)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\src\app.py", line 395, in get_notes
+    if cats.length > 0:
+AttributeError: 'list' object has no attribute 'length'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\werkzeug\serving.py", line 335, in run_wsgi
+    execute(self.server.app)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\werkzeug\serving.py", line 322, in execute
+    application_iter = app(environ, start_response)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 2548, in __call__
+    return self.wsgi_app(environ, start_response)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 2528, in wsgi_app
+    response = self.handle_exception(e)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask_cors\extension.py", line 165, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask_cors\extension.py", line 182, in cors_after_request
+    if try_match(normalized_path, res_regex):
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask_cors\core.py", line 280, in try_match
+    return re.match(maybe_regex, request_origin, flags=re.IGNORECASE)
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\re.py", line 190, in match
+    return _compile(pattern, flags).match(string)
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\re.py", line 303, in _compile
+    p = sre_compile.compile(pattern, flags)
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\sre_compile.py", line 788, in compile
+    p = sre_parse.parse(p, flags)
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\sre_parse.py", line 955, in parse
+    p = _parse_sub(source, state, flags & SRE_FLAG_VERBOSE, 0)
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\sre_parse.py", line 444, in _parse_sub
+    itemsappend(_parse(source, state, verbose, nested + 1,
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\sre_parse.py", line 669, in _parse
+    raise source.error("nothing to repeat",
+re.error: nothing to repeat at position 0
+ERROR in app: Exception on /notes [GET]
+Traceback (most recent call last):
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 2525, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 1822, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask_cors\extension.py", line 165, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 1820, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 1796, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask_cors\decorator.py", line 128, in wrapped_function
+    resp = make_response(f(*args, **kwargs))
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\src\app.py", line 99, in decorator
+    return f(current_user, *args, **kwargs)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\src\app.py", line 395, in get_notes
+    if cats.length > 0:
+AttributeError: 'list' object has no attribute 'length'
+ERROR in app: Request finalizing failed with an error while handling an error
+Traceback (most recent call last):
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 2525, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 1822, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask_cors\extension.py", line 165, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 1820, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 1796, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask_cors\decorator.py", line 128, in wrapped_function
+    resp = make_response(f(*args, **kwargs))
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\src\app.py", line 99, in decorator
+    return f(current_user, *args, **kwargs)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\src\app.py", line 395, in get_notes
+    if cats.length > 0:
+AttributeError: 'list' object has no attribute 'length'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 1844, in finalize_request
+    response = self.process_response(response)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 2337, in process_response
+    response = self.ensure_sync(func)(response)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask_cors\extension.py", line 182, in cors_after_request
+    if try_match(normalized_path, res_regex):
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask_cors\core.py", line 280, in try_match
+    return re.match(maybe_regex, request_origin, flags=re.IGNORECASE)
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\re.py", line 190, in match
+    return _compile(pattern, flags).match(string)
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\re.py", line 303, in _compile
+    p = sre_compile.compile(pattern, flags)
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\sre_compile.py", line 788, in compile
+    p = sre_parse.parse(p, flags)
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\sre_parse.py", line 955, in parse
+    p = _parse_sub(source, state, flags & SRE_FLAG_VERBOSE, 0)
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\sre_parse.py", line 444, in _parse_sub
+    itemsappend(_parse(source, state, verbose, nested + 1,
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\sre_parse.py", line 669, in _parse
+    raise source.error("nothing to repeat",
+re.error: nothing to repeat at position 0
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 11:19:06] "[35m[1mGET /notes?category=sport HTTP/1.1[0m" 500 -
+ERROR in _internal: Error on request:
+Traceback (most recent call last):
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 2525, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 1822, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask_cors\extension.py", line 165, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 1820, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 1796, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask_cors\decorator.py", line 128, in wrapped_function
+    resp = make_response(f(*args, **kwargs))
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\src\app.py", line 99, in decorator
+    return f(current_user, *args, **kwargs)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\src\app.py", line 395, in get_notes
+    if cats.length > 0:
+AttributeError: 'list' object has no attribute 'length'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\werkzeug\serving.py", line 335, in run_wsgi
+    execute(self.server.app)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\werkzeug\serving.py", line 322, in execute
+    application_iter = app(environ, start_response)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 2548, in __call__
+    return self.wsgi_app(environ, start_response)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 2528, in wsgi_app
+    response = self.handle_exception(e)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask_cors\extension.py", line 165, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask_cors\extension.py", line 182, in cors_after_request
+    if try_match(normalized_path, res_regex):
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask_cors\core.py", line 280, in try_match
+    return re.match(maybe_regex, request_origin, flags=re.IGNORECASE)
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\re.py", line 190, in match
+    return _compile(pattern, flags).match(string)
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\re.py", line 303, in _compile
+    p = sre_compile.compile(pattern, flags)
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\sre_compile.py", line 788, in compile
+    p = sre_parse.parse(p, flags)
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\sre_parse.py", line 955, in parse
+    p = _parse_sub(source, state, flags & SRE_FLAG_VERBOSE, 0)
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\sre_parse.py", line 444, in _parse_sub
+    itemsappend(_parse(source, state, verbose, nested + 1,
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\sre_parse.py", line 669, in _parse
+    raise source.error("nothing to repeat",
+re.error: nothing to repeat at position 0
+ERROR in app: Exception on /notes [GET]
+Traceback (most recent call last):
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 2525, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 1822, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask_cors\extension.py", line 165, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 1820, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 1796, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask_cors\decorator.py", line 128, in wrapped_function
+    resp = make_response(f(*args, **kwargs))
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\src\app.py", line 99, in decorator
+    return f(current_user, *args, **kwargs)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\src\app.py", line 395, in get_notes
+    if cats.length > 0:
+AttributeError: 'list' object has no attribute 'length'
+ERROR in app: Request finalizing failed with an error while handling an error
+Traceback (most recent call last):
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 2525, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 1822, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask_cors\extension.py", line 165, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 1820, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 1796, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask_cors\decorator.py", line 128, in wrapped_function
+    resp = make_response(f(*args, **kwargs))
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\src\app.py", line 99, in decorator
+    return f(current_user, *args, **kwargs)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\src\app.py", line 395, in get_notes
+    if cats.length > 0:
+AttributeError: 'list' object has no attribute 'length'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 1844, in finalize_request
+    response = self.process_response(response)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 2337, in process_response
+    response = self.ensure_sync(func)(response)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask_cors\extension.py", line 182, in cors_after_request
+    if try_match(normalized_path, res_regex):
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask_cors\core.py", line 280, in try_match
+    return re.match(maybe_regex, request_origin, flags=re.IGNORECASE)
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\re.py", line 190, in match
+    return _compile(pattern, flags).match(string)
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\re.py", line 303, in _compile
+    p = sre_compile.compile(pattern, flags)
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\sre_compile.py", line 788, in compile
+    p = sre_parse.parse(p, flags)
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\sre_parse.py", line 955, in parse
+    p = _parse_sub(source, state, flags & SRE_FLAG_VERBOSE, 0)
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\sre_parse.py", line 444, in _parse_sub
+    itemsappend(_parse(source, state, verbose, nested + 1,
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\sre_parse.py", line 669, in _parse
+    raise source.error("nothing to repeat",
+re.error: nothing to repeat at position 0
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 11:19:07] "[35m[1mGET /notes?category=sport HTTP/1.1[0m" 500 -
+ERROR in _internal: Error on request:
+Traceback (most recent call last):
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 2525, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 1822, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask_cors\extension.py", line 165, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 1820, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 1796, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask_cors\decorator.py", line 128, in wrapped_function
+    resp = make_response(f(*args, **kwargs))
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\src\app.py", line 99, in decorator
+    return f(current_user, *args, **kwargs)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\src\app.py", line 395, in get_notes
+    if cats.length > 0:
+AttributeError: 'list' object has no attribute 'length'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\werkzeug\serving.py", line 335, in run_wsgi
+    execute(self.server.app)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\werkzeug\serving.py", line 322, in execute
+    application_iter = app(environ, start_response)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 2548, in __call__
+    return self.wsgi_app(environ, start_response)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask\app.py", line 2528, in wsgi_app
+    response = self.handle_exception(e)
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask_cors\extension.py", line 165, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask_cors\extension.py", line 182, in cors_after_request
+    if try_match(normalized_path, res_regex):
+  File "C:\Users\alkha\Desktop\All Projects\Klerc\Klerc\venv\lib\site-packages\flask_cors\core.py", line 280, in try_match
+    return re.match(maybe_regex, request_origin, flags=re.IGNORECASE)
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\re.py", line 190, in match
+    return _compile(pattern, flags).match(string)
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\re.py", line 303, in _compile
+    p = sre_compile.compile(pattern, flags)
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\sre_compile.py", line 788, in compile
+    p = sre_parse.parse(p, flags)
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\sre_parse.py", line 955, in parse
+    p = _parse_sub(source, state, flags & SRE_FLAG_VERBOSE, 0)
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\sre_parse.py", line 444, in _parse_sub
+    itemsappend(_parse(source, state, verbose, nested + 1,
+  File "C:\Users\alkha\AppData\Local\Programs\Python\Python310\lib\sre_parse.py", line 669, in _parse
+    raise source.error("nothing to repeat",
+re.error: nothing to repeat at position 0
+INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
+INFO in _internal:  * Restarting with stat
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 11:19:37] "GET /notes?category=sport HTTP/1.1" 200 -
+INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
+INFO in _internal:  * Restarting with stat
+INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
+INFO in _internal:  * Restarting with stat
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 11:20:53] "GET /notes?category=music HTTP/1.1" 200 -
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 11:21:02] "GET /notes?category=lo HTTP/1.1" 200 -
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 11:21:11] "GET /notes?category=lu HTTP/1.1" 200 -
+INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
+INFO in _internal:  * Restarting with stat
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 11:22:58] "GET /notes?category=lu HTTP/1.1" 200 -
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 11:23:07] "GET /notes?category=music HTTP/1.1" 200 -
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 11:23:13] "GET /notes?category=sport HTTP/1.1" 200 -
+INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
+INFO in _internal:  * Restarting with stat
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 11:43:42] "GET /notes?category=sport HTTP/1.1" 200 -
+INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
+INFO in _internal:  * Restarting with stat
+INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
+INFO in _internal:  * Restarting with stat
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 11:46:54] "GET /notes?category=sport HTTP/1.1" 200 -
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 11:47:02] "POST /login HTTP/1.1" 200 -
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 11:47:17] "POST /login HTTP/1.1" 200 -
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 11:47:37] "GET /notes?category=sport HTTP/1.1" 200 -
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 11:48:10] "GET /notes?category=el HTTP/1.1" 200 -
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 11:48:25] "GET /notes?category=el HTTP/1.1" 200 -
+INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
+INFO in _internal:  * Restarting with stat
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 11:48:30] "GET /notes?category=el HTTP/1.1" 200 -
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 11:48:46] "GET /notes HTTP/1.1" 200 -
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 11:49:28] "GET /categories HTTP/1.1" 200 -
+INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
+INFO in _internal:  * Restarting with stat
+INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
+INFO in _internal:  * Restarting with stat
+INFO in _internal:  * Restarting with stat
+INFO in _internal:  * Restarting with stat
+INFO in _internal:  * Restarting with stat
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 11:54:54] "GET /notes?category=music HTTP/1.1" 200 -
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 11:55:41] "POST /notes HTTP/1.1" 200 -
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 11:55:51] "POST /notes HTTP/1.1" 200 -
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 11:55:59] "POST /notes HTTP/1.1" 200 -
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 11:56:05] "POST /notes HTTP/1.1" 200 -
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 11:56:17] "POST /notes HTTP/1.1" 200 -
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 11:56:24] "POST /notes HTTP/1.1" 200 -
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 11:56:37] "POST /notes HTTP/1.1" 200 -
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 11:56:53] "GET /notes?category=culture HTTP/1.1" 200 -
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 11:57:03] "GET /notes?category=music HTTP/1.1" 200 -
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 11:57:37] "GET /notes?category=culture HTTP/1.1" 200 -
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 11:58:40] "GET /notes?category=sport HTTP/1.1" 200 -
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 11:59:40] "GET /notes?category=sport&page=2 HTTP/1.1" 200 -
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 11:59:49] "GET /notes?category=sport&page=3 HTTP/1.1" 200 -
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 11:59:57] "GET /notes?category=sport&page=4 HTTP/1.1" 200 -
+INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
+INFO in _internal:  * Restarting with stat
+INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
+INFO in _internal:  * Restarting with stat
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 12:03:19] "[33mGET /notes?category=sport&page=4 HTTP/1.1[0m" 404 -
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 12:03:32] "[33mGET /notes?category=sport HTTP/1.1[0m" 404 -
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 12:03:34] "[33mGET /notes?category=sport HTTP/1.1[0m" 404 -
+INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
+INFO in _internal:  * Restarting with stat
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 12:04:18] "[33mGET /notes?category=sport HTTP/1.1[0m" 404 -
+INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
+INFO in _internal:  * Restarting with stat
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 12:04:21] "[33mGET /notes?category=sport HTTP/1.1[0m" 404 -
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 12:04:23] "[33mGET /notes?category=sport HTTP/1.1[0m" 404 -
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 12:04:25] "[33mGET /notes?category=sport HTTP/1.1[0m" 404 -
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 12:04:52] "[33mGET /notes?category=music HTTP/1.1[0m" 404 -
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 12:04:54] "[33mGET /notes?category=music HTTP/1.1[0m" 404 -
+INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
+INFO in _internal:  * Restarting with stat
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 12:05:36] "[33mGET /notes?category=music HTTP/1.1[0m" 404 -
+INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
+INFO in _internal:  * Restarting with stat
+INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
+INFO in _internal:  * Restarting with stat
+INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
+INFO in _internal:  * Restarting with stat
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 12:06:15] "[33mGET /notes?category=music HTTP/1.1[0m" 404 -
+INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
+INFO in _internal:  * Restarting with stat
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 12:07:05] "GET /notes?category=music HTTP/1.1" 200 -
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 12:07:22] "GET /notes?category=music HTTP/1.1" 200 -
+INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
+INFO in _internal:  * Restarting with stat
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 12:07:26] "[33mGET /notes?category=music HTTP/1.1[0m" 404 -
+INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
+INFO in _internal:  * Restarting with stat
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 12:07:34] "[33mGET /notes?category=music HTTP/1.1[0m" 404 -
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 12:07:34] "[33mGET /notes?category=music HTTP/1.1[0m" 404 -
+INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
+INFO in _internal:  * Restarting with stat
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 12:07:41] "GET /notes?category=music HTTP/1.1" 200 -
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 12:07:41] "GET /notes?category=music HTTP/1.1" 200 -
+INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
+INFO in _internal:  * Restarting with stat
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 12:08:41] "[33mGET /notes?category=music HTTP/1.1[0m" 404 -
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 12:08:43] "[33mGET /notes?category=music HTTP/1.1[0m" 404 -
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 12:08:44] "[33mGET /notes?category=music HTTP/1.1[0m" 404 -
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 12:08:45] "[33mGET /notes?category=music HTTP/1.1[0m" 404 -
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 12:08:46] "[33mGET /notes?category=music HTTP/1.1[0m" 404 -
+INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
+INFO in _internal:  * Restarting with stat
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 12:10:33] "GET /notes?category=music HTTP/1.1" 200 -
+INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
+INFO in _internal:  * Restarting with stat
+INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
+INFO in _internal:  * Restarting with stat
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 12:12:36] "GET /notes?category=music HTTP/1.1" 200 -
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 12:12:37] "GET /notes?category=music HTTP/1.1" 200 -
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 12:12:39] "GET /notes?category=music HTTP/1.1" 200 -
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 12:12:40] "GET /notes?category=music HTTP/1.1" 200 -
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 12:12:41] "GET /notes?category=music HTTP/1.1" 200 -
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 12:12:43] "GET /notes?category=music HTTP/1.1" 200 -
+INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
+INFO in _internal:  * Restarting with stat
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 12:13:02] "[33mGET /notes?category=music HTTP/1.1[0m" 404 -
+INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
+INFO in _internal:  * Restarting with stat
+INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
+INFO in _internal:  * Restarting with stat
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 12:17:27] "GET /notes?category=music HTTP/1.1" 200 -
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 12:17:28] "GET /notes?category=music HTTP/1.1" 200 -
+INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
+INFO in _internal:  * Restarting with stat
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 12:17:45] "GET /notes?category=music HTTP/1.1" 200 -
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 12:17:45] "GET /notes?category=music HTTP/1.1" 200 -
+INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
+INFO in _internal:  * Restarting with stat
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 12:18:07] "[33mGET /notes?category=music HTTP/1.1[0m" 404 -
+INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
+INFO in _internal:  * Restarting with stat
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 12:18:24] "GET /notes?category=music HTTP/1.1" 200 -
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 12:18:24] "GET /notes?category=music HTTP/1.1" 200 -
+INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
+INFO in _internal:  * Restarting with stat
+INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
+INFO in _internal:  * Restarting with stat
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 12:19:56] "GET /notes?category=music HTTP/1.1" 200 -
+INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
+INFO in _internal:  * Restarting with stat
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 12:19:58] "GET /notes?category=music HTTP/1.1" 200 -
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 12:19:59] "GET /notes?category=music HTTP/1.1" 200 -
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 12:20:00] "GET /notes?category=music HTTP/1.1" 200 -
+INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
+INFO in _internal:  * Restarting with stat
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 12:21:47] "GET /notes?category=music HTTP/1.1" 200 -
+INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
+INFO in _internal:  * Restarting with stat
+INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
+INFO in _internal:  * Restarting with stat
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 12:26:15] "GET /notes?category=music HTTP/1.1" 200 -
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 12:26:39] "GET /notes?category=sport HTTP/1.1" 200 -
+INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
+INFO in _internal:  * Restarting with stat
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 12:27:42] "GET /notes?category=sport HTTP/1.1" 200 -
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 12:28:05] "GET /notes?category=sport&page=3 HTTP/1.1" 200 -
+INFO in _internal: 127.0.0.1 - - [09/Jan/2023 12:28:40] "GET /notes?category=sport&page=2 HTTP/1.1" 200 -
+INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
+INFO in _internal:  * Restarting with stat
 INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\database\\models.py', reloading
 INFO in _internal:  * Restarting with stat
-INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
-INFO in _internal:  * Restarting with stat
-INFO in _internal: 127.0.0.1 - - [08/Jan/2023 08:46:22] "GET /categories HTTP/1.1" 200 -
-INFO in _internal: 127.0.0.1 - - [08/Jan/2023 08:46:32] "GET /categories?page=2 HTTP/1.1" 200 -
-INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
-INFO in _internal:  * Restarting with stat
-INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
-INFO in _internal:  * Restarting with stat
-INFO in _internal:  * Restarting with stat
-INFO in _internal: 127.0.0.1 - - [08/Jan/2023 08:47:44] "GET /categories HTTP/1.1" 200 -
-INFO in _internal: 127.0.0.1 - - [08/Jan/2023 08:47:51] "GET /categories HTTP/1.1" 200 -
-INFO in _internal: 127.0.0.1 - - [08/Jan/2023 08:47:56] "GET /categories HTTP/1.1" 200 -
-INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
-INFO in _internal:  * Restarting with stat
-INFO in _internal: 127.0.0.1 - - [08/Jan/2023 08:48:13] "GET /categories HTTP/1.1" 200 -
-INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
-INFO in _internal:  * Restarting with stat
-INFO in _internal: 127.0.0.1 - - [08/Jan/2023 08:51:52] "GET /notes HTTP/1.1" 200 -
-INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
-INFO in _internal:  * Restarting with stat
-INFO in _internal: 127.0.0.1 - - [08/Jan/2023 08:52:32] "GET /notes HTTP/1.1" 200 -
-INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
-INFO in _internal:  * Restarting with stat
-INFO in _internal: 127.0.0.1 - - [08/Jan/2023 08:54:37] "[33mGET /notes HTTP/1.1[0m" 404 -
-INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
-INFO in _internal:  * Restarting with stat
-INFO in _internal: 127.0.0.1 - - [08/Jan/2023 08:55:06] "[33mGET /notes HTTP/1.1[0m" 404 -
-INFO in _internal: 127.0.0.1 - - [08/Jan/2023 08:55:09] "[33mGET /notes HTTP/1.1[0m" 404 -
-INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
-INFO in _internal:  * Restarting with stat
-INFO in _internal: 127.0.0.1 - - [08/Jan/2023 08:55:38] "[33mGET /notes HTTP/1.1[0m" 404 -
-INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
-INFO in _internal:  * Restarting with stat
-INFO in _internal: 127.0.0.1 - - [08/Jan/2023 08:56:42] "GET /notes HTTP/1.1" 200 -
 INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\database\\models.py', reloading
 INFO in _internal:  * Restarting with stat
-INFO in _internal: 127.0.0.1 - - [08/Jan/2023 08:57:20] "GET /notes HTTP/1.1" 200 -
-INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
-INFO in _internal:  * Restarting with stat
-INFO in _internal: 127.0.0.1 - - [08/Jan/2023 08:57:33] "GET /notes HTTP/1.1" 200 -
-INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\database\\models.py', reloading
-INFO in _internal:  * Restarting with stat
-INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\database\\models.py', reloading
-INFO in _internal:  * Restarting with stat
-INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\database\\models.py', reloading
-INFO in _internal:  * Restarting with stat
-INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\database\\models.py', reloading
-INFO in _internal:  * Restarting with stat
-INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\database\\models.py', reloading
-INFO in _internal:  * Restarting with stat
-INFO in _internal: 127.0.0.1 - - [08/Jan/2023 08:59:35] "GET /notes HTTP/1.1" 200 -
-INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
-INFO in _internal:  * Restarting with stat
-INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
-INFO in _internal:  * Restarting with stat
-INFO in _internal: 127.0.0.1 - - [08/Jan/2023 09:00:54] "[33mGET /notes HTTP/1.1[0m" 404 -
-INFO in _internal: 127.0.0.1 - - [08/Jan/2023 09:01:14] "[33mGET /notes HTTP/1.1[0m" 404 -
-INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
-INFO in _internal:  * Restarting with stat
-INFO in _internal: 127.0.0.1 - - [08/Jan/2023 09:01:47] "GET /notes HTTP/1.1" 200 -
-INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
-INFO in _internal:  * Restarting with stat
-INFO in _internal: 127.0.0.1 - - [08/Jan/2023 09:02:46] "[33mGET /notes HTTP/1.1[0m" 404 -
-INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
-INFO in _internal:  * Restarting with stat
-INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
-INFO in _internal:  * Restarting with stat
-INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
-INFO in _internal:  * Restarting with stat
-INFO in _internal: 127.0.0.1 - - [08/Jan/2023 09:03:49] "[33mGET /notes HTTP/1.1[0m" 404 -
-INFO in _internal: 127.0.0.1 - - [08/Jan/2023 09:03:51] "[33mGET /notes HTTP/1.1[0m" 404 -
-INFO in _internal: 127.0.0.1 - - [08/Jan/2023 09:03:53] "[33mGET /notes HTTP/1.1[0m" 404 -
-INFO in _internal: 127.0.0.1 - - [08/Jan/2023 09:03:54] "[33mGET /notes HTTP/1.1[0m" 404 -
-INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
-INFO in _internal:  * Restarting with stat
-INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
-INFO in _internal:  * Restarting with stat
-INFO in _internal: 127.0.0.1 - - [08/Jan/2023 09:07:26] "[33mGET /notes HTTP/1.1[0m" 404 -
-INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
-INFO in _internal:  * Restarting with stat
-INFO in _internal: 127.0.0.1 - - [08/Jan/2023 09:09:38] "[33mGET /notes HTTP/1.1[0m" 404 -
-INFO in _internal: 127.0.0.1 - - [08/Jan/2023 09:09:39] "[33mGET /notes HTTP/1.1[0m" 404 -
-INFO in _internal: 127.0.0.1 - - [08/Jan/2023 09:09:40] "[33mGET /notes HTTP/1.1[0m" 404 -
-INFO in _internal: 127.0.0.1 - - [08/Jan/2023 09:09:42] "[33mGET /notes HTTP/1.1[0m" 404 -
-INFO in _internal: 127.0.0.1 - - [08/Jan/2023 09:09:43] "[33mGET /notes HTTP/1.1[0m" 404 -
-INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
-INFO in _internal:  * Restarting with stat
-INFO in _internal: 127.0.0.1 - - [08/Jan/2023 09:09:59] "GET /notes HTTP/1.1" 200 -
-INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
-INFO in _internal:  * Restarting with stat
-INFO in _internal: 127.0.0.1 - - [08/Jan/2023 09:10:17] "GET /notes HTTP/1.1" 200 -
-INFO in _internal: 127.0.0.1 - - [08/Jan/2023 09:11:14] "GET /notes?page=2 HTTP/1.1" 200 -
-INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
-INFO in _internal:  * Restarting with stat
-INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
-INFO in _internal:  * Restarting with stat
-INFO in _internal: 127.0.0.1 - - [08/Jan/2023 09:12:28] "GET /notes?page=2 HTTP/1.1" 200 -
-INFO in _internal: 127.0.0.1 - - [08/Jan/2023 09:12:41] "GET /notes?page=3 HTTP/1.1" 200 -
-INFO in _internal: 127.0.0.1 - - [08/Jan/2023 09:12:59] "GET /notes?page=4 HTTP/1.1" 200 -
-INFO in _internal: 127.0.0.1 - - [08/Jan/2023 09:13:06] "GET /notes?page=5 HTTP/1.1" 200 -
-INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
-INFO in _internal:  * Restarting with stat
-INFO in _internal: 127.0.0.1 - - [08/Jan/2023 09:14:10] "GET /notes?page=2 HTTP/1.1" 200 -
-INFO in _internal: 127.0.0.1 - - [08/Jan/2023 09:14:14] "GET /notes?page=3 HTTP/1.1" 200 -
-INFO in _internal: 127.0.0.1 - - [08/Jan/2023 09:14:18] "[33mGET /notes?page=4 HTTP/1.1[0m" 404 -
-INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
-INFO in _internal:  * Restarting with stat
-INFO in _internal: 127.0.0.1 - - [08/Jan/2023 09:15:16] "[33mGET /notes?page=4 HTTP/1.1[0m" 404 -
-INFO in _internal: 127.0.0.1 - - [08/Jan/2023 09:15:19] "GET /notes?page=3 HTTP/1.1" 200 -
-INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
-INFO in _internal:  * Restarting with stat
-INFO in _internal: 127.0.0.1 - - [08/Jan/2023 09:15:35] "[33mGET /notes?page=4 HTTP/1.1[0m" 404 -
-INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
-INFO in _internal:  * Restarting with stat
-INFO in _internal: 127.0.0.1 - - [08/Jan/2023 09:17:15] "[33mGET /notes?page=4 HTTP/1.1[0m" 404 -
-INFO in _internal: 127.0.0.1 - - [08/Jan/2023 09:17:16] "GET /notes?page=1 HTTP/1.1" 200 -
-INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
-INFO in _internal:  * Restarting with stat
-INFO in _internal: 127.0.0.1 - - [08/Jan/2023 09:19:25] "GET /notes?page=1 HTTP/1.1" 200 -
-INFO in _internal: 127.0.0.1 - - [08/Jan/2023 09:19:53] "GET /notes?page=1&page_size=7 HTTP/1.1" 200 -
-INFO in _internal: 127.0.0.1 - - [08/Jan/2023 09:20:04] "GET /notes?page=1&page_size=3 HTTP/1.1" 200 -
-INFO in _internal: 127.0.0.1 - - [08/Jan/2023 09:24:16] "GET /tasks HTTP/1.1" 200 -
-INFO in _internal: 127.0.0.1 - - [08/Jan/2023 09:24:23] "GET /tasks HTTP/1.1" 200 -
-INFO in _internal: 127.0.0.1 - - [08/Jan/2023 09:24:32] "GET /tasks HTTP/1.1" 200 -
-INFO in _internal: 127.0.0.1 - - [08/Jan/2023 09:24:52] "POST /login HTTP/1.1" 200 -
-INFO in _internal: 127.0.0.1 - - [08/Jan/2023 09:25:17] "GET /tasks HTTP/1.1" 200 -
-INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\database\\models.py', reloading
-INFO in _internal:  * Restarting with stat
-INFO in _internal: 127.0.0.1 - - [08/Jan/2023 09:28:54] "GET /tasks HTTP/1.1" 200 -
-INFO in _internal: 127.0.0.1 - - [08/Jan/2023 09:28:55] "GET /tasks HTTP/1.1" 200 -
-INFO in _internal: 127.0.0.1 - - [08/Jan/2023 09:28:56] "GET /tasks HTTP/1.1" 200 -
-INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
-INFO in _internal:  * Restarting with stat
-INFO in _internal: 127.0.0.1 - - [08/Jan/2023 09:29:57] "GET /tasks HTTP/1.1" 200 -
-INFO in _internal: 127.0.0.1 - - [08/Jan/2023 09:29:57] "GET /tasks HTTP/1.1" 200 -
-INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
-INFO in _internal:  * Restarting with stat
-INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
-INFO in _internal:  * Restarting with stat
-INFO in _internal: 127.0.0.1 - - [08/Jan/2023 09:30:26] "GET /tasks HTTP/1.1" 200 -
-INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
-INFO in _internal:  * Restarting with stat
-INFO in _internal: 127.0.0.1 - - [08/Jan/2023 09:31:35] "[31m[1mGET /tasks HTTP/1.1[0m" 400 -
-INFO in _internal: 127.0.0.1 - - [08/Jan/2023 09:31:36] "[31m[1mGET /tasks HTTP/1.1[0m" 400 -
-INFO in _internal: 127.0.0.1 - - [08/Jan/2023 09:31:48] "[31m[1mGET /tasks HTTP/1.1[0m" 400 -
-INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
-INFO in _internal:  * Restarting with stat
-INFO in _internal: 127.0.0.1 - - [08/Jan/2023 09:34:16] "GET /tasks HTTP/1.1" 200 -
-INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
-INFO in _internal:  * Restarting with stat
-INFO in _internal: 127.0.0.1 - - [08/Jan/2023 09:35:26] "[31m[1mGET /tasks HTTP/1.1[0m" 400 -
-INFO in _internal: 127.0.0.1 - - [08/Jan/2023 09:35:29] "[31m[1mGET /tasks HTTP/1.1[0m" 400 -
-INFO in _internal: 127.0.0.1 - - [08/Jan/2023 09:35:30] "[31m[1mGET /tasks HTTP/1.1[0m" 400 -
-INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
-INFO in _internal:  * Restarting with stat
-INFO in _internal: 127.0.0.1 - - [08/Jan/2023 09:35:52] "[31m[1mGET /tasks HTTP/1.1[0m" 400 -
 INFO in _internal:  * Detected change in 'C:\\Users\\alkha\\Desktop\\All Projects\\Klerc\\Klerc\\src\\app.py', reloading
 INFO in _internal:  * Restarting with stat
