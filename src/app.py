@@ -187,7 +187,6 @@ def register():
     except Exception:
         abort(400)
 
-
 @app.route('/login', methods=['POST'])
 @cross_origin()
 def login():
@@ -254,7 +253,7 @@ def login():
 #         abort(401)
 
 
-@app.route('/categories', methods=['GET', 'POST'])
+@app.route('/categories', methods=['GET','POST'])
 @cross_origin()
 @token_required
 def create_category(current_user):
@@ -427,7 +426,7 @@ def get_notes(current_user):
 
         notes = paginate_items(request, query)
 
-        note_data = [note for note in notes]
+        note_data = list(notes)
 
         not len(note_data) and abort(404)
 
