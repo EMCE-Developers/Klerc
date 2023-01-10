@@ -69,13 +69,21 @@ class Note(db.Model):
     def __repre__(self):
         return f'<User {self.id} {self.title} {self.content}>'
 
+    def format(self):
+        return {
+            'title': self.title,
+            'content': self.content,
+            'category_id': self.category_id,
+            'date_created': self.date_created,
+        }
+
     def insert(self):
         db.session.add(self)
         db.session.commit()
 
     def update(self):
         db.session.commit()
-    
+
     def delete(self):
         db.session.delete(self)
         db.session.commit()
@@ -94,6 +102,14 @@ class Category(db.Model):
     cat_id = db.Column(db.Integer)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     note = db.relationship('Note', backref=db.backref('note', lazy=True))
+
+    def format(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'cat_id': self.cat_id,
+            'user_id': self.user_id
+        }
 
     def __repre__(self):
         return f'<User {self.id} {self.title} {self.content}>'
@@ -120,6 +136,17 @@ class Task(db.Model):
 
     def __repre__(self):
         return f'<User {self.id} {self.start_time} {self.time_period}>'
+
+    def format(self):
+        return {
+            'task_id': self.task_id,
+            'id': self.id,
+            'title': self.title,
+            'content': self.content,
+            'user_id': self.user_id,
+            'start_time': self.start_time,
+            'end_time': self.end_time,
+        }
 
     def insert(self):
         db.session.add(self)
